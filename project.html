@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Project · Knuckey Rover</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="The question behind the Knuckey Rover capstone, its four research questions, scope, requirements and timeline.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&amp;display=swap">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="Knuckey Rover home">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="2" fill="none" stroke="#1C1F1D" stroke-width="1.5"/><g stroke="#1C1F1D" stroke-width="1.4"><path d="M5 11.6 27 8.4"/><path d="M5 17.6 27 14.4"/><path d="M5 23.6 27 20.4"/></g><circle cx="19" cy="15.5" r="3.2" fill="#009CA8" stroke="#F6F3EC" stroke-width="1.6"/></svg>
+      <span><span class="brand-name">Knuckey Rover</span><span class="brand-sub">RMIT × Knuckey</span></span>
+    </a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+    <nav class="nav" id="site-nav" aria-label="Main">
+      <a href="project.html" aria-current="page">Project</a>
+      <a href="rover.html">Rover</a>
+      <a href="results.html">Results</a>
+      <a href="knuckey.html">Knuckey</a>
+      <a href="team.html">Team</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<section class="page-head">
+  <div class="wrap">
+    <p class="eyebrow">The project</p>
+    <h1>An autonomy layer for machines that already exist</h1>
+    <p class="lede">Knuckey already builds the tractor and the seeder. This project tests, at prototype scale, whether a low-cost navigation, monitoring and safety architecture could drive them along a grower's mapped tramlines, and stop safely when something goes wrong.</p>
+    <nav class="toc" aria-label="On this page">
+      <a href="#question">The question</a>
+      <a href="#rqs">Research questions</a>
+      <a href="#scope">Scope</a>
+      <a href="#requirements">Requirements</a>
+      <a href="#timeline">Timeline</a>
+    </nav>
+  </div>
+</section>
+
+<section id="question" class="band" aria-labelledby="h-question">
+  <div class="wrap cols-2-wide">
+    <div class="stack">
+      <p class="eyebrow">The question</p>
+      <h2 id="h-question" class="h-section">Everything links back to one sentence</h2>
+    </div>
+    <div class="stack-lg">
+      <p class="h-sub" style="font-weight:600;font-stretch:100%;line-height:1.3">How can a prototype autonomous CTF seeding vehicle integrate navigation, system-health monitoring and supervisory safety control to achieve accurate path tracking, while detecting hazards or critical faults and initiating a reliable safe-stop response?</p>
+      <div class="prose stack">
+        <p>Going straight to a full-size autonomous tractor would carry heavy technical, financial and safety risk, because localisation, obstacle response, fault monitoring and safe stopping all have to work together. Knuckey has suggested a horizon of three to five years for autonomous capability. This first year builds a scaled prototype and a simulation environment where the architecture can be tested and its weak points found before anyone commits to the full machine.</p>
+        <p>We treat simulated and prototype results as development evidence. A machine that drives itself is not, on that basis alone, a safe machine. We did not carry out a functional-safety lifecycle under ISO 25119 or ISO 13849, and we don't claim conformance with the ISO 18497 series.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="rqs" class="band band-paper2" aria-labelledby="h-rqs">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Research questions</p>
+      <h2 id="h-rqs" class="h-section">Four questions, and where each one stands</h2>
+      <p class="lede">Each answer says what was measured, where, and what's still open. The <a href="results.html">Results page</a> has the full numbers.</p>
+    </div>
+
+    <div style="border-top:1px solid var(--rule-2)">
+      <article class="rq">
+        <div class="rq-id">RQ1<b>Accuracy</b></div>
+        <p class="rq-q">What line-following accuracy and repeatability does the navigation stack achieve on broadacre tramlines?</p>
+        <div class="rq-a">
+          <span class="status status-part"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 1.5a6.5 6.5 0 0 1 0 13z" fill="currentColor"/></svg>Met in simulation, not yet on the rover</span>
+          <p>Over 81 simulated passes, cross-track error was 18.3 mm RMS, or 3.8 mm once the first 20 m of each pass is left out. Neighbouring passes held their 12 m spacing to 5.7 mm RMS, and 15.8 mm with RTK-grade noise added. <span class="src src-sim">Sim</span></p>
+          <p>In the field the receiver repeated to 0.057 m lap to lap. Prototype 2, steered by a simpler route executor, sat 0.24–0.90 m RMS off the long rows. <span class="src src-field">Field</span></p>
+        </div>
+      </article>
+      <article class="rq">
+        <div class="rq-id">RQ2<b>Coverage</b></div>
+        <p class="rq-q">How does true coverage measured from logged vehicle paths compare with planner-level estimates?</p>
+        <div class="rq-a">
+          <span class="status status-part"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 1.5a6.5 6.5 0 0 1 0 13z" fill="currentColor"/></svg>Simulation only</span>
+          <p>A 12 m implement swept along the logged path covered 99.95% of the 670,680 m² target, leaving 312.8 m² untreated. 90.6% of the missed cells lie within 5 m of a pass start. <span class="src src-sim">Sim</span></p>
+          <p>Published planners report 97.29–100%, but they score the planned geometry. Ours includes tracking error and pass-entry behaviour, so the two aren't directly comparable. No implement was towed in the field.</p>
+        </div>
+      </article>
+      <article class="rq">
+        <div class="rq-id">RQ3<b>Robustness</b></div>
+        <p class="rq-q">How severely does navigation degrade under brief GNSS dropouts, injected inertial disturbance and low-speed heading conditions?</p>
+        <div class="rq-a">
+          <span class="status status-no"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5.5 5.5l5 5M10.5 5.5l-5 5" stroke="currentColor" stroke-width="1.6"/></svg>Partly answered</span>
+          <p>Twice in the field the RTK corrections stopped. The receiver held its fixed solution for 600 s on ageing corrections, then dropped straight to a 3D fix of 1.6–2.1 m, and the rover kept driving. After a power interruption its heading reset to the magnetometer; switching on dual-antenna heading fixed it. <span class="src src-field">Field</span></p>
+          <p>Vibration wasn't measured, because raw IMU data wasn't logged. The simulated dropout and IMU-noise studies are still being written up for the final report.</p>
+        </div>
+      </article>
+      <article class="rq">
+        <div class="rq-id">RQ4<b>Safe stop</b></div>
+        <p class="rq-q">How reliably and rapidly does the layered stop architecture respond to communication failures and internal faults?</p>
+        <div class="rq-a">
+          <span class="status status-part"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 1.5a6.5 6.5 0 0 1 0 13z" fill="currentColor"/></svg>Fast where tested; reliability not yet measured</span>
+          <p>The physical E-stop pulled the main bus below 1 V in about 100 ms, and the rover stopped in 0.5 m from about 1 m/s. <span class="src src-rover">Rover</span> Both faults that ended a run in autonomous mode were caught and latched by the rover's own monitoring. <span class="src src-field">Field</span></p>
+          <p>The link-loss stop passed the software dry run but hasn't been tested on the moving rover. Most physical checks were single observations without logged timestamps.</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="scope" class="band" aria-labelledby="h-scope">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Scope</p>
+      <h2 id="h-scope" class="h-section">What this year covers</h2>
+    </div>
+    <div class="cols-2">
+      <div class="stack">
+        <h3 class="h-small">In scope</h3>
+        <dl class="spec">
+          <dt>Localisation</dt><dd>GNSS-RTK, IMU and wheel odometry fused through extended Kalman filters into one pose estimate.</dd>
+          <dt>Following</dt><dd>Consuming a supplied field plan, and measuring tracking and coverage against it.</dd>
+          <dt>Disturbance</dt><dd>GNSS loss, correction dropouts, vibration, heading error and low-speed turning.</dd>
+          <dt>Safety</dt><dd>Safe-stop behaviour, obstacle response and a layered emergency-stop design.</dd>
+        </dl>
+      </div>
+      <div class="stack">
+        <h3 class="h-small">Out of scope</h3>
+        <dl class="spec">
+          <dt>Product</dt><dd>A production-ready tractor or a certified agricultural safety system.</dd>
+          <dt>Mapping</dt><dd>Building the map on board. The rover takes the grower's existing plan.</dd>
+          <dt>Implement</dt><dd>Towing a seeder. Coverage uses a geometric 12 m footprint.</dd>
+          <dt>Avoidance</dt><dd>Planning around obstacles. Knuckey agreed to stop-and-wait for the prototype.</dd>
+        </dl>
+      </div>
+    </div>
+    <div class="note mt-3">
+      <span class="note-label" style="color:var(--teal)">Accuracy against what?</span>
+      <p>Every tracking figure on this site is measured against the supplied waypoints. A perfectly followed waypoint can still miss the real tramline by whatever error the map carries. Published studies put RTK drone mapping at about 2–5 cm, the same size as the whole tolerance. Measuring against the ground needs an independent survey, which we didn't have.</p>
+    </div>
+  </div>
+</section>
+
+<section id="requirements" class="band band-paper2" aria-labelledby="h-req">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Requirements</p>
+      <h2 id="h-req" class="h-section">Targets and the evidence against them</h2>
+      <p class="lede">Only customer and project requirements are judged met or not. Published results are context.</p>
+    </div>
+    <div class="table-wrap">
+      <table class="data">
+        <thead><tr><th scope="col">Requirement</th><th scope="col">From</th><th scope="col">Evidence</th><th scope="col">Status</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Neighbouring passes within ±20–50 mm</th><td>Knuckey site visit</td><td>Sim: 5.7 mm RMS (max 122.4 mm) ideal GNSS; 15.8 mm RMS (max 57.8 mm) RTK-grade. Rover: 0.24–0.90 m cross-track on the long rows.</td><td><span class="status status-part"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 1.5a6.5 6.5 0 0 1 0 13z" fill="currentColor"/></svg>Sim as RMS only</span></td></tr>
+          <tr><th scope="row">Stop within 1 m</th><td>Completion Plan</td><td>0.5 m at about 1 m/s. The stop path used wasn't recorded.</td><td><span class="status status-ok"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="currentColor"/><path d="M4.5 8.2 7 10.6l4.6-5" fill="none" stroke="#fff" stroke-width="1.8"/></svg>Met as tested</span></td></tr>
+          <tr><th scope="row">Physical E-stop: motor current 0 A within 100 ms</th><td>Completion Plan</td><td>Main bus voltage below 1 V in about 100 ms on the bench. Current wasn't measured.</td><td><span class="status status-part"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 1.5a6.5 6.5 0 0 1 0 13z" fill="currentColor"/></svg>Voltage proxy only</span></td></tr>
+          <tr><th scope="row">Safe state on an internal fault</th><td>ISO 18497-2</td><td>Both run-ending faults in autonomous mode latched the E-stop: a bus collapse to 14.6 V and 1.01 s of stale voltage data.</td><td><span class="status status-ok"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="currentColor"/><path d="M4.5 8.2 7 10.6l4.6-5" fill="none" stroke="#fff" stroke-width="1.8"/></svg>Shown, 2 events</span></td></tr>
+          <tr><th scope="row">Safe state on link loss, timed to stopping distance</th><td>ISO 18497-2</td><td>0.5 s timeout, five missed 10 Hz frames, adds 0.5 m at 1 m/s. At the 1.67 m/s design speed it adds 0.84 m before braking starts. Dry run only.</td><td><span class="status status-part"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 1.5a6.5 6.5 0 0 1 0 13z" fill="currentColor"/></svg>Software only</span></td></tr>
+          <tr><th scope="row">Defined response to lost positioning</th><td>ISO 18497-3</td><td>The rover kept driving on a 3D fix after RTK was lost, twice.</td><td><span class="status status-no"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5.5 5.5l5 5M10.5 5.5l-5 5" stroke="currentColor" stroke-width="1.6"/></svg>Not implemented</span></td></tr>
+          <tr><th scope="row">Obstacle stop inside 3 m</th><td>Project setting</td><td>Stopped, waited and resumed indoors. In the field it took 500 mm to stop for a 1 m object, once, untimed.</td><td><span class="status status-no"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5.5 5.5l5 5M10.5 5.5l-5 5" stroke="currentColor" stroke-width="1.6"/></svg>Not validated</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="timeline" class="band" aria-labelledby="h-time">
+  <div class="wrap cols-2-wide">
+    <div class="stack">
+      <p class="eyebrow">Timeline</p>
+      <h2 id="h-time" class="h-section">2026, from a shoebox-sized rover to a 50 kg one</h2>
+      <p class="prose muted">Two semesters: Part A (OENG1167) in the first half of the year and Part B (OENG1168) in the second.</p>
+    </div>
+    <ol class="timeline">
+      <li><time>Semester 1</time><b>Prototype 1 drives</b><span>A 3D-printed four-wheel skid steer with closed-loop motor control, wheel odometry and untethered PlayStation tele-op over its own Wi-Fi network.</span></li>
+      <li class="key"><time>Mid semester 1</time><b>SLAM dropped</b><span>Bare soil offers too few features. The project switched to GNSS-RTK fused with IMU and wheel odometry.</span></li>
+      <li class="key"><time>1 May</time><b>Site visit to Knuckey, Winchelsea</b><span>The ±20–50 mm requirement, John Deere compatibility, rocks as the main obstacle. <a href="knuckey.html#visit">What we heard</a>.</span></li>
+      <li><time>End of semester 1</time><b>First real numbers</b><span>0.22 m endpoint error over a 74 m walk. In Isaac Sim the dual-filter setup lifted waypoint completion from 28 to 32 of 34.</span></li>
+      <li><time>July</time><b>Prototype 2 driveline and wheels</b><span>Four ODrive M8325s motors, 10:1 gearboxes, 260 mm wheels.</span></li>
+      <li><time>August to September</time><b>48 V power system</b><span>Battery mount fitted on 21 August; the drivetrain first ran with the wheels raised on 28 August; tele-op through the Pi worked by the end of the month.</span></li>
+      <li class="key"><time>3 September</time><b>Prototype 2's first drive</b><span>A gearbox support bracket added in mid-September made it run noticeably smoother.</span></li>
+      <li><time>8 and 13 October</time><b>Stop tests</b><span>The remote E-stop stopped the wheels on both days. On 13 October the physical E-stop cut motor power, and every wheel held 36.7 rpm on the stand.</span></li>
+      <li class="key"><time>13 and 14 October</time><b>Field test, Argyle Square</b><span>Receiver reference and walking test, then the rectangle and base-station row runs. <a href="results.html#field">Results</a>.</span></li>
+      <li><time>16 October</time><b>Out on grass</b><span>The photos and video on the home page.</span></li>
+      <li><time>October</time><b>Final report and EnGenius</b><span>This site goes with the team's booth poster.</span></li>
+    </ol>
+  </div>
+</section>
+
+</main>
+
+<footer class="soilband">
+  <div class="wrap">
+    <div class="stack">
+      <h2>Knuckey Rover</h2>
+      <p>OENG1168 Engineering Capstone, RMIT University, 2026. Built with Knuckey Agricultural Engineering of Winchelsea, Victoria.</p>
+      <div class="partner"><img src="assets/fig/knuckey-logo.png" width="44" height="44" alt="Knuckey Agricultural Engineering logo"><span class="small">Knuckey Agricultural Engineering<br>Est. 1917</span></div>
+    </div>
+    <div>
+      <ul>
+        <li><a href="index.html">Story</a></li>
+        <li><a href="project.html">Project</a></li>
+        <li><a href="rover.html">Rover</a></li>
+        <li><a href="results.html">Results</a></li>
+        <li><a href="knuckey.html">Knuckey</a></li>
+        <li><a href="team.html">Team</a></li>
+      </ul>
+    </div>
+    <div>
+      <ul>
+        <li>Isabella Calder</li><li>Manas Desai</li><li>Alexander McIntosh</li><li>Morne Nel</li><li>Harry Roe</li><li>Harry Roffe</li>
+        <li class="mt-1">Supervisor: Dr Amirali Khodadadian Gostar</li>
+      </ul>
+    </div>
+    <p class="fine">Figures come from the team's final report (draft of 19 October 2026) and the field records of 13 and 14 October 2026. Tags show where each number comes from. Sim: Isaac Sim. Field: Argyle Square trials. Rover: commissioning tests on Prototype 2. Bench: software bench tests. Site visit: Knuckey, Winchelsea, 1 May 2026. Ref: published research cited in the report.</p>
+  </div>
+</footer>
+
+<script src="assets/js/site.js"></script>
+</body>
+</html>

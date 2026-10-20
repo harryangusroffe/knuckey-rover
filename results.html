@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Results · Knuckey Rover</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Simulation and field results for the Knuckey Rover: tracking accuracy, coverage, robustness and safe-stop response, with test conditions.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&amp;display=swap">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="Knuckey Rover home">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="2" fill="none" stroke="#1C1F1D" stroke-width="1.5"/><g stroke="#1C1F1D" stroke-width="1.4"><path d="M5 11.6 27 8.4"/><path d="M5 17.6 27 14.4"/><path d="M5 23.6 27 20.4"/></g><circle cx="19" cy="15.5" r="3.2" fill="#009CA8" stroke="#F6F3EC" stroke-width="1.6"/></svg>
+      <span><span class="brand-name">Knuckey Rover</span><span class="brand-sub">RMIT × Knuckey</span></span>
+    </a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+    <nav class="nav" id="site-nav" aria-label="Main">
+      <a href="project.html">Project</a>
+      <a href="rover.html">Rover</a>
+      <a href="results.html" aria-current="page">Results</a>
+      <a href="knuckey.html">Knuckey</a>
+      <a href="team.html">Team</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<section class="page-head">
+  <div class="wrap">
+    <p class="eyebrow">Results</p>
+    <h1>What we measured, and how far to trust it</h1>
+    <p class="lede">The simulation shows what the navigation software can do with ideal inputs. The field test shows what Prototype 2 did on 14 October with a simpler controller. The two aren't the same test, so this page keeps them apart.</p>
+    <div class="flow mt-1" aria-label="Source tags used on this site">
+      <span class="src src-sim">Sim</span><span class="small muted">Isaac Sim</span>
+      <span class="src src-field">Field</span><span class="small muted">Argyle Square, 13–14 Oct</span>
+      <span class="src src-rover">Rover</span><span class="small muted">commissioning on Prototype 2</span>
+      <span class="src src-bench">Bench</span><span class="small muted">software bench and dry run</span>
+    </div>
+    <nav class="toc" aria-label="On this page">
+      <a href="#sim">Simulation</a>
+      <a href="#field">Field test</a>
+      <a href="#safety">Safety</a>
+      <a href="#assessment">Assessment</a>
+    </nav>
+  </div>
+</section>
+
+<!-- ============ SIMULATION ============ -->
+<section id="sim" class="band" aria-labelledby="h-sim">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Simulation <span class="src src-sim">Sim</span></p>
+      <h2 id="h-sim" class="h-section">A real paddock, an idealised rover</h2>
+      <p class="lede">NVIDIA Isaac Sim 5.1.0 ran the full ROS 2 Jazzy navigation graph in real time on an 8 GB RTX 3060 Ti, with the main loop held at 60 Hz so simulated time matched wall-clock time.</p>
+    </div>
+    <div class="cols-2">
+      <div class="table-wrap">
+        <table class="data" style="min-width:0">
+          <thead><tr><th scope="col">Element</th><th scope="col">In the simulation</th><th scope="col">Effect</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Software</th><td>Nav2, robot_localization and the mission sequencer</td><td>Faithful</td></tr>
+            <tr><th scope="row">Route</th><td>The grower's John Deere AB line; 81 passes, 12 m apart, 36 m headlands</td><td>Faithful</td></tr>
+            <tr><th scope="row">GNSS</th><td>Noise-free at 10 Hz by default; noise relays for RTK and standard grade</td><td>Best case</td></tr>
+            <tr><th scope="row">Heading</th><td>True attitude, no speed-dependent error</td><td>Can't test low-speed heading</td></tr>
+            <tr><th scope="row">Vehicle</th><td>0.4 × 0.3 m, 20 kg, two driven wheels and two casters</td><td>Not Prototype 2</td></tr>
+            <tr><th scope="row">Terrain</th><td>Flat collision plane</td><td>No slope, roll or ruts</td></tr>
+            <tr><th scope="row">Implement</th><td>A 12 m geometric swath</td><td>No draft load or offset</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="prose stack">
+        <p>Prototype 2's CAD couldn't be exported as a working robot: its mates formed 32 disconnected rigid groups, so the exporter produced one link with no wheel joints. Where Prototype 2 appears in a render, it's a visual shell on the smaller physics body.</p>
+        <p>Every configuration got one attempt, identified by its repository commit, with no intervention and no tuning between attempts. Trajectories were committed unedited and analysed offline by Python tools with 15 unit tests. An ideal pass layout run through the same pipeline returns exactly 100% coverage, zero overlap and zero missed area.</p>
+        <p>An earlier wheel-radius error made the simulated rover travel about 1.2 times its labelled speed. Every run was checked for it, and an affected GNSS-dropout study was withdrawn and repeated.</p>
+      </div>
+    </div>
+
+    <h3 class="h-sub mt-4">Reaching every waypoint wasn't enough</h3>
+    <div class="cols-2 mt-2">
+      <div class="prose stack">
+        <p>The first configuration sent the 162 waypoints one by one to Nav2's default controller. On a 17-pass test it reached all 34 waypoints and still only covered 74.8% of the target area: 25.2% was missed and 26.8% treated twice. Between waypoints it wandered 17–21 m on average on east-bound legs, and 33 m at worst.</p>
+        <p>Two changes fixed it. The mission sequencer now hands Nav2 a continuous path with a pose every 0.7 m, and Regulated Pure Pursuit replaced the Dynamic Window Approach controller. On the same route the worst cross-track error fell from 36.3 m to 0.336 m.</p>
+      </div>
+      <div>
+        <div class="legend" aria-hidden="true"><span><i style="background:var(--c-sim)"></i>Regulated Pure Pursuit (current)</span><span><i style="background:var(--ink-3)"></i>Dynamic Window Approach (retired)</span></div>
+        <div class="chart" id="ctrl-chart"></div>
+        <details class="table-twin">
+          <summary>Show the numbers as a table</summary>
+          <div class="table-wrap"><table class="data" style="min-width:0">
+            <thead><tr><th scope="col">Cross-track statistic</th><th scope="col" class="n">RPP</th><th scope="col" class="n">DWA</th><th scope="col" class="n">DWA, alt. tuning</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Median</th><td class="n">&lt; 0.5 mm</td><td class="n">7.490 m</td><td class="n">9.558 m</td></tr>
+              <tr><th scope="row">95th percentile</th><td class="n">0.001 m</td><td class="n">27.967 m</td><td class="n">27.643 m</td></tr>
+              <tr><th scope="row">Maximum</th><td class="n">0.336 m</td><td class="n">36.336 m</td><td class="n">34.359 m</td></tr>
+            </tbody>
+          </table></div>
+        </details>
+      </div>
+    </div>
+
+    <h3 class="h-sub mt-4">The full paddock, in one attempt</h3>
+    <div class="stats mt-2">
+      <div class="stat"><span class="stat-v">162<small>of 162</small></span><span class="stat-l">waypoints across 81 passes, with no aborts or recovery behaviours</span></div>
+      <div class="stat"><span class="stat-v">8.47<small>h</small></span><span class="stat-l">and 56.9 km at a 2.0 m/s cruise; measured 1.995 m/s, filtered estimate 1.998 m/s</span></div>
+      <div class="stat"><span class="stat-v">18.3<small>mm</small></span><span class="stat-l">cross-track RMSE on the straight passes over 144,859 samples; 3.8 mm after the first 20 m</span></div>
+      <div class="stat"><span class="stat-v">99.95%</span><span class="stat-l">coverage by a 12 m implement; 312.8 m² untreated, 0.0016% treated twice</span></div>
+    </div>
+    <div class="cols-2 mt-3">
+      <figure class="fig plot">
+        <img src="assets/fig/full-route.png" width="1600" height="1114" loading="lazy" alt="Plot of the planned route and driven path over the whole paddock, with insets of one west and one east headland turn.">
+        <figcaption class="cap"><b>Planned route and driven path</b>, full-route run. Insets: a west and an east headland turn.</figcaption>
+      </figure>
+      <figure class="fig plot">
+        <img src="assets/fig/per-pass-error.png" width="1600" height="918" loading="lazy" alt="Per-pass cross-track error for passes 1 to 81 on a log scale: per-pass RMS mostly near 1 centimetre, maximum after the first 20 metres near 10 centimetres, maximum including pass entry near 30 centimetres.">
+        <figcaption class="cap"><b>Per-pass cross-track error.</b> The pass 1 peak is the run-in from the start point.</figcaption>
+      </figure>
+    </div>
+    <div class="cols-2 mt-3">
+      <div class="prose stack">
+        <h3 class="h-small">Where the error sits</h3>
+        <p>Most of it is at pass entry. West-bound passes started a median 0.268 m left of the line, 40 of 41 on the same side, which is inside the 0.5 m arrival tolerance the sequencer accepts at the headland. In both directions error fell below 10 mm after about 23 m. The recorded data don't identify the cause; the headland manoeuvre and the heading check are the likely places to look.</p>
+        <p>The same offset shows up in coverage. Of the 1,251 untreated cells, 90.6% lie within 5 m of a pass start and 69.1% belong to west-bound passes.</p>
+        <p>Heading, estimated from course over ground at 5 Hz, was 0.98° RMS, or 0.58° after pass entry. The published sub-0.15° figure comes from a full-size tractor measured differently, so it's a reference only.</p>
+      </div>
+      <figure class="fig plot">
+        <img src="assets/fig/coverage-map.png" width="1382" height="1031" loading="lazy" alt="Coverage map of the paddock: almost entirely treated once, with thin untreated strips along the start-of-pass edge, and two insets of the largest untreated patches of 13.5 and 11.8 square metres.">
+        <figcaption class="cap"><b>Coverage map.</b> Untreated cells are enlarged to show at field scale; insets show the two largest patches, 13.5 m² and 11.8 m², at true scale.</figcaption>
+      </figure>
+    </div>
+
+    <h3 class="h-sub mt-4">Neighbouring passes, and what GNSS quality does to them</h3>
+    <p class="prose muted mt-1">The customer requirement is about neighbouring passes, so this is the closest test of it. Spacing error against the nominal 12.000 m, sampled every metre with the first 20 m and last 5 m of each pass excluded.</p>
+    <div class="table-wrap mt-2">
+      <table class="data">
+        <thead><tr><th scope="col">Run</th><th scope="col" class="n">Pass pairs</th><th scope="col" class="n">Stations</th><th scope="col" class="n">RMS</th><th scope="col" class="n">Max</th><th scope="col" class="n">Within ±20 mm</th><th scope="col" class="n">Within ±50 mm</th><th scope="col" class="n">Coverage</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Full route, 2.0 m/s</th><td class="n">80</td><td class="n">51,944</td><td class="n">5.7 mm</td><td class="n">122.4 mm</td><td class="n">99.26%</td><td class="n">99.59%</td><td class="n">99.9534%</td></tr>
+          <tr><th scope="row">Noise-free, 17 passes</th><td class="n">16</td><td class="n">10,394</td><td class="n">0.6 mm</td><td class="n">1.8 mm</td><td class="n">100.00%</td><td class="n">100.00%</td><td class="n">99.9275%</td></tr>
+          <tr><th scope="row">RTK-grade noise, 17 passes</th><td class="n">16</td><td class="n">10,390</td><td class="n">15.8 mm</td><td class="n">57.8 mm</td><td class="n">79.56%</td><td class="n">99.88%</td><td class="n">99.9147%</td></tr>
+          <tr><th scope="row">Standard-grade noise, 17 passes</th><td class="n">16</td><td class="n">10,398</td><td class="n">1,848 mm</td><td class="n">7,943 mm</td><td class="n">0.75%</td><td class="n">2.05%</td><td class="n">97.3560%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="cols-2 mt-3">
+      <div class="prose stack">
+        <p>Measured as RMS, or as the share of stations within tolerance, the simulated stack met the tighter ±20 mm bound with ideal GNSS. Measured by its single worst point, it didn't meet 50 mm. The site visit didn't say which reading Knuckey means, so that needs confirming before it becomes an acceptance test.</p>
+        <p>With standard-grade GNSS, modelled on Prototype 1's u-blox receiver, the rover never settled into a steady cruise, kept stopping and restarting, and took 7.3 h against 2.9 h with RTK-grade noise. 13.38% of the area was treated twice, which for a seeder means wasted seed. The result backs RTK as the position source.</p>
+      </div>
+      <div class="note is-todo">
+        <span class="note-label">Read with care</span>
+        <p class="small">All three receiver-grade runs predate the wheel-radius fix and ran at about 1.18 m/s against a 1.0 m/s setting. The noise-free and RTK runs ran at the same speed, so they compare like for like, but the study shows sensitivity to receiver quality rather than a controlled estimate of it. Each condition ran once. Headland turning accuracy couldn't be measured, because the planned headland paths weren't logged.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FIELD ============ -->
+<section id="field" class="band band-paper2" aria-labelledby="h-field">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Field test <span class="src src-field">Field</span></p>
+      <h2 id="h-field" class="h-section">Argyle Square, Carlton, 13 and 14 October</h2>
+      <p class="lede">Flat, open to the sky, and paved with painted lines and a central disc that show up in aerial imagery. Four tests, each involving more of the system than the one before.</p>
+    </div>
+    <div class="cols-2">
+      <figure class="fig">
+        <img src="assets/img/argyle-square.jpg" width="1400" height="788" loading="lazy" alt="Argyle Square: a paved plaza with radiating painted lines and a central white disc, ringed by trees.">
+        <figcaption class="cap"><b>Argyle Square.</b> The painted lines and centre disc gave reference geometry visible in aerial imagery.</figcaption>
+      </figure>
+      <div class="table-wrap">
+        <table class="data" style="min-width:0">
+          <thead><tr><th scope="col">Test</th><th scope="col">Platform</th><th scope="col">Speed</th><th scope="col">Arrival radius</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Reference point R0</th><td>Capture box, static</td><td>—</td><td>—</td></tr>
+            <tr><th scope="row">Walking test</th><td>Capture box, hand-carried</td><td>Walking pace</td><td>—</td></tr>
+            <tr><th scope="row">Chocks check</th><td>Prototype 2, wheels raised</td><td>0.45 m/s commanded</td><td>—</td></tr>
+            <tr><th scope="row">Rectangle</th><td>Prototype 2, laptop on a cable</td><td>≤ 0.25 m/s</td><td>2 m</td></tr>
+            <tr><th scope="row">Base-station rows</th><td>Prototype 2 over the radio</td><td>≤ 0.25 m/s</td><td>0.5 m</td></tr>
+            <tr><th scope="row">Obstacle stop</th><td>Prototype 2</td><td>—</td><td>—</td></tr>
+          </tbody>
+        </table>
+        <p class="cap mt-1">Corrections over NTRIP from AUSCORS station EML200AUS0, about 1.4 km away. The rover's route executor steered straight from the GNSS fix, not from the fused estimate. Distances are measured from logged GNSS against the planned points; nobody surveyed the rover independently.</p>
+      </div>
+    </div>
+
+    <div class="cols-3 mt-4">
+      <div class="stack">
+        <h3 class="h-small">Reference point</h3>
+        <p class="small" style="color:var(--ink-2)">The capture box sat with its master antenna over the disc's centre dot for 10 minutes, held RTK fix the whole time, and spread 3.8 mm east, 3.7 mm north and 6.7 mm vertical (1σ). A second base station, PKVL00AUS0, agreed to within 3.6 mm horizontally. That's the receiver's static precision, not the accuracy of a moving vehicle.</p>
+      </div>
+      <div class="stack">
+        <h3 class="h-small">Walking test</h3>
+        <p class="small" style="color:var(--ink-2)">Carried twice round a 39 m loop traced on the aerial image: cross-track RMSE 0.166 m on the straights and 0.099 m on the arcs, but the two laps agreed to 0.057 m RMS. Shifting the traced loop by the R0 offset made the fit worse, so most of the absolute error came from the tracing and the walker.</p>
+      </div>
+      <div class="stack">
+        <h3 class="h-small">Rectangle</h3>
+        <p class="small" style="color:var(--ink-2)">A 31.6 × 8.5 m rectangle, closed in 334 s on RTK throughout. With a 2 m arrival radius the rover turned 1.61–1.70 m early at every corner and started each later leg inside the line. On the first attempt it turned away from J and spun round: the planner and /cmd_vel disagreed on the sign of yaw rate.</p>
+      </div>
+    </div>
+    <div class="cols-2 mt-3">
+      <figure class="fig plot">
+        <img src="assets/fig/walk-result.png" width="1540" height="660" loading="lazy" alt="Left: the logged RTK track over the traced walking loop. Right: cross-track error on each leg against plus and minus 0.30 metre lines.">
+        <figcaption class="cap"><b>Walking test.</b> Logged RTK track (green) over the traced loop (black); dotted, the loop shifted by the R0 offset.</figcaption>
+      </figure>
+      <figure class="fig plot">
+        <img src="assets/fig/rectangle-result.png" width="1033" height="523" loading="lazy" alt="The planned rectangle I, J, K, L with the rover's RTK track cutting inside each corner, and 2 metre arrival circles at the corners.">
+        <figcaption class="cap"><b>Rectangle test.</b> Dashed, the plan; green, the rover's RTK track; circles, the 2 m arrival radius.</figcaption>
+      </figure>
+    </div>
+
+    <h3 class="h-sub mt-4">Base-station rows: the rover drives itself</h3>
+    <div class="cols-2-wide mt-2">
+      <div class="stack-lg">
+        <div class="prose stack">
+          <p>The operator loaded an eight-point plan, I to P, on the base station and sent ARM, GO and AUTO from its touchscreen. Prototype 2 drove itself over the radio link with a 0.5 m arrival radius. Faults ended the first two runs, so reaching all eight points took three runs of 191 s, 654 s and 602 s.</p>
+          <p>It reached six points on RTK and passed within 0.08–0.19 m of each. It reached M and P on a standard 3D fix, accurate only to metres, so no distance is given for those. On most legs the mean signed error was close to the RMSE: a steady offset to one side, not a weave.</p>
+        </div>
+        <figure class="fig plot">
+          <img src="assets/fig/base-runs.png" width="897" height="747" loading="lazy" alt="The three base-station runs in blue, orange and green against the planned rows I to P, with 0.5 metre arrival circles and triangles marking each run's start.">
+          <figcaption class="cap"><b>The three runs</b> (blue, orange, green) against the planned rows (dashed).</figcaption>
+        </figure>
+      </div>
+      <figure class="fig frame">
+        <svg viewBox="0 0 600 440" role="img" aria-label="Plan of the four 31.6 metre rows, 8.5 metres apart, from I to P. Closest approach on RTK: I 0.19, J 0.08, K 0.08, L 0.18, N 0.17, O 0.14 metres. M and P reached on a 3D fix, not reported. Row cross-track RMSE: I to J 0.296, K to L 0.895, O to P 0.237 metres; M to N had no RTK samples." style="width:100%;height:auto">
+          <g font-family="Archivo, Helvetica Neue, Arial, sans-serif" font-size="12" fill="#575B56">
+            <!-- 14 px per metre; origin I at (70,60) -->
+            <g stroke="#3A3F3B" stroke-width="1.6" fill="none">
+              <path d="M70 60 H512.4"/><path d="M512.4 179 H70"/><path d="M70 298 H512.4"/><path d="M512.4 417 H70"/>
+            </g>
+            <g stroke="#B9B3A6" stroke-width="1.2" fill="none">
+              <path d="M512.4 60 V179"/><path d="M70 179 V298"/><path d="M512.4 298 V417"/><path d="M70 417 V60"/>
+            </g>
+            <g fill="#F6F3EC" stroke="#B0661A" stroke-width="1.5">
+              <circle cx="70" cy="60" r="7"/><circle cx="512.4" cy="60" r="7"/><circle cx="512.4" cy="179" r="7"/><circle cx="70" cy="179" r="7"/><circle cx="512.4" cy="298" r="7"/><circle cx="512.4" cy="417" r="7"/>
+            </g>
+            <g fill="#F6F3EC" stroke="#8C877C" stroke-width="1.5" stroke-dasharray="3 3">
+              <circle cx="70" cy="298" r="7"/><circle cx="70" cy="417" r="7"/>
+            </g>
+            <g fill="#1C1F1D" font-size="14" font-weight="500">
+              <text x="48" y="65" text-anchor="end">I</text><text x="534" y="65">J</text><text x="534" y="184">K</text><text x="48" y="184" text-anchor="end">L</text>
+              <text x="48" y="303" text-anchor="end">M</text><text x="534" y="303">N</text><text x="534" y="422">O</text><text x="48" y="422" text-anchor="end">P</text>
+            </g>
+            <text x="70" y="38">0.19 m</text><text x="512.4" y="38" text-anchor="end">0.08 m</text>
+            <text x="512.4" y="205" text-anchor="end">0.08 m</text><text x="70" y="205">0.18 m</text>
+            <text x="70" y="324" fill="#7A776E">3D fix</text><text x="512.4" y="324" text-anchor="end">0.17 m</text>
+            <text x="512.4" y="400" text-anchor="end">0.14 m</text><text x="70" y="400" fill="#7A776E">3D fix</text>
+            <text x="291" y="82" text-anchor="middle" fill="#1C1F1D">row RMSE 0.296 m · run 1</text>
+            <text x="291" y="201" text-anchor="middle" fill="#1C1F1D">row RMSE 0.895 m · run 2</text>
+            <text x="291" y="320" text-anchor="middle">no RTK-fixed samples</text>
+            <text x="291" y="439" text-anchor="middle" fill="#1C1F1D">row RMSE 0.237 m* · run 3</text>
+            <text x="291" y="138" text-anchor="middle" fill="#7A776E">31.6 m rows, 8.5 m apart, drawn to scale</text>
+          </g>
+        </svg>
+        <figcaption class="cap">Closest approach to each point on RTK. Ringed points reached on RTK; dashed points reached on a metre-level 3D fix. *Under 50% of samples RTK fixed. The real rows lie at an angle across the square.</figcaption>
+      </figure>
+    </div>
+    <div class="mt-4">
+      <div>
+        <p class="h-small">Straight-section error by leg</p>
+        <p class="small muted mt-1">Cross-track RMSE on RTK-fixed samples, log scale. Every leg sits above the customer band, the receiver's hand-carried walk included.</p>
+        <div class="legend mt-2" aria-hidden="true"><span><i class="sq" style="background:var(--c-field)"></i>RMSE on the leg</span><span><i class="sq" style="background:var(--soil-1);box-shadow:inset 0 0 0 1px var(--c-field)"></i>* under 50% of samples RTK fixed</span><span><i class="band-key"></i>Customer ±20–50 mm</span></div>
+        <div class="table-wrap" style="border-top:0">
+          <div class="chart" id="leg-chart"></div>
+        </div>
+        <details class="table-twin">
+          <summary>Show the numbers as a table</summary>
+          <div class="table-wrap"><table class="data" style="min-width:0">
+            <thead><tr><th scope="col">Leg</th><th scope="col" class="n">RMSE</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Walk legs 1, 3, 5</th><td class="n">0.151, 0.139, 0.203 m</td></tr>
+              <tr><th scope="row">Rectangle I→J, J→K, K→L, L→I</th><td class="n">0.407, 1.26, 2.02, 1.32 m</td></tr>
+              <tr><th scope="row">Run 1 I→J, J→K</th><td class="n">0.296, 1.68 m</td></tr>
+              <tr><th scope="row">Run 2 J→K, K→L, L→M*</th><td class="n">2.07, 0.895, 0.396 m</td></tr>
+              <tr><th scope="row">Run 3 N→O, O→P*</th><td class="n">0.119, 0.237 m</td></tr>
+              <tr><th scope="row">M→N, P→I</th><td class="n">no RTK-fixed samples</td></tr>
+            </tbody>
+          </table></div>
+        </details>
+      </div>
+    </div>
+
+    <h3 class="h-sub mt-4">Things the simulation never showed us</h3>
+    <div class="cols-2 mt-2">
+      <div class="prose stack">
+        <p><b>Lost corrections.</b> The laptop cable carrying RTK corrections came out twice. Both times the receiver held its fixed solution on ageing corrections for 600 s, then dropped straight to a 3D fix of 1.6–2.1 m with no float stage in between. Both drops happened in AUTO, and the rover kept driving on the degraded fix. Fix type and correction age need to become safety inputs.</p>
+        <p><b>A heading reset.</b> After the motor bus collapsed at the end of run 1, the heading estimate fell back to the magnetometer and read about 107° with the rover facing east. Commanded east, it drove roughly 175°. Switching on the receiver's dual-antenna heading fixed it without a reboot.</p>
+        <p><b>A slow first fix.</b> At the rover's first position the receiver sat in RTK float for over 10 minutes, and fixed about 10 s after the rover moved 8 m to a more open spot.</p>
+        <p class="small muted">Vibration wasn't measured: raw IMU data wasn't logged in the field.</p>
+      </div>
+      <figure class="fig plot">
+        <img src="assets/fig/rtk-hold.png" width="1140" height="585" loading="lazy" alt="Receiver fix type and correction age over 50 minutes of base-station runs: both times corrections stopped, the fix dropped from RTK fixed to 3D exactly 600 seconds later.">
+        <figcaption class="cap"><b>RTK hold.</b> Fix type (left axis) and correction age (right). Both drops come 600 s after the last correction.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SAFETY ============ -->
+<section id="safety" class="band" aria-labelledby="h-safety">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Safety</p>
+      <h2 id="h-safety" class="h-section">Every stop we tried removed motion</h2>
+      <p class="lede">The targets come from the team's Completion Plan. They're our own working criteria, not published benchmarks.</p>
+    </div>
+    <div class="table-wrap">
+      <table class="data">
+        <thead><tr><th scope="col">Measurement</th><th scope="col">Result</th><th scope="col">Conditions</th><th scope="col">Source</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Physical E-stop to main bus below 1 V</th><td class="num">about 100 ms</td><td>Bench. Target was 0 A motor current in 100 ms; current wasn't measured.</td><td><span class="src src-rover">Rover</span></td></tr>
+          <tr><th scope="row">Stopping distance</th><td class="num">0.5 m</td><td>About 1 m/s; stop path not recorded. Target 1 m.</td><td><span class="src src-rover">Rover</span></td></tr>
+          <tr><th scope="row">Stop key to motor contactor open</th><td class="num">0.8 s</td><td>Wheels raised on chocks, one trial</td><td><span class="src src-field">Field</span></td></tr>
+          <tr><th scope="row">Arming time</th><td class="num">6.9 s</td><td>Wheels raised, two trials</td><td><span class="src src-field">Field</span></td></tr>
+          <tr><th scope="row">Obstacle stop</th><td class="num">500 mm</td><td>1 m object, one trial, no timestamps</td><td><span class="src src-field">Field</span></td></tr>
+          <tr><th scope="row">Internal faults in AUTO caught and latched</th><td class="num">2 of 2</td><td>Motor bus collapse; stale voltage telemetry</td><td><span class="src src-field">Field</span></td></tr>
+          <tr><th scope="row">Link-loss software stop after 0.5 s</th><td>Passed</td><td>Dry run with injected packets; not tested on the moving rover</td><td><span class="src src-bench">Bench</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="cols-2 mt-3">
+      <div class="prose stack">
+        <p>During run 1 the motor bus collapsed from 45.7 V to 14.6 V while the battery still read 45.7 V. The bus-voltage monitor caught it and latched the E-stop. The same collapse happened twice more during pre-charge. Run 2 ended when bus-voltage telemetry went silent for 1.01 s, which the monitor also treated as a fault. Run 3 ended when the operator stopped it at I.</p>
+        <p>We haven't found the cause of the collapse. With no electrical feedback from the pre-charge and contactor hardware, the software sees the effect but not the cause.</p>
+        <p>The obstacle detector held the rover 10 times across the three runs. Nobody recorded what triggered each hold, so we can't say how many were real.</p>
+      </div>
+      <figure class="fig plot">
+        <img src="assets/fig/bus-voltage.png" width="1140" height="1080" loading="lazy" alt="DC bus voltage across the three base-station runs: steady near 45.7 volts in AUTO, with sharp dips to 14.6, 9.8 and 5.9 volts marked.">
+        <figcaption class="cap"><b>DC bus voltage</b> over the three runs. Shaded: AUTO. Triangles mark dip minima.</figcaption>
+      </figure>
+    </div>
+    <div class="note is-gap mt-3">
+      <span class="note-label">The timeout question</span>
+      <p>The 0.5 s link timeout adds 0.5 m of travel at 1 m/s before braking starts. With the measured 0.5 m stop, that's about 1.0 m in total: on the 1 m target, with no margin. At the 1.67 m/s design speed the timeout alone adds 0.84 m. Until it's validated against stopping performance, the operating speed should stay low.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ASSESSMENT ============ -->
+<section id="assessment" class="band band-paper2" aria-labelledby="h-assess">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Assessment</p>
+      <h2 id="h-assess" class="h-section">The receiver is ready. The control loop isn't, yet.</h2>
+    </div>
+    <div class="cols-2">
+      <div class="prose stack">
+        <p>The positioning layer is capable. Its static precision and lap-to-lap repeatability are at the scale of the ±20–50 mm requirement. The simulated navigation software also meets the requirement on RMS with RTK-grade input.</p>
+        <p>Closed-loop tracking on Prototype 2 falls short by a factor of 5 to 18, and the error is a steady offset. That points at the control loop and its inputs: heading, steering, and a 2 Hz, 0.1 m position feed. It doesn't point at the receiver.</p>
+        <p>The safety monitoring caught both internal faults it was built for. The missing piece is a response to degraded positioning.</p>
+        <p class="small muted">These results come from single runs on paving at 0.25 m/s. They show feasibility at prototype scale, not field performance.</p>
+      </div>
+      <div class="table-wrap">
+        <table class="data" style="min-width:0">
+          <thead><tr><th scope="col">Question</th><th scope="col">Status</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">RQ1 Accuracy</th><td><span class="status status-part"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 1.5a6.5 6.5 0 0 1 0 13z" fill="currentColor"/></svg>Simulation yes; rover not yet</span></td></tr>
+            <tr><th scope="row">RQ2 Coverage</th><td><span class="status status-part"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 1.5a6.5 6.5 0 0 1 0 13z" fill="currentColor"/></svg>Simulation only</span></td></tr>
+            <tr><th scope="row">RQ3 Robustness</th><td><span class="status status-no"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5.5 5.5l5 5M10.5 5.5l-5 5" stroke="currentColor" stroke-width="1.6"/></svg>Correction loss seen; no response</span></td></tr>
+            <tr><th scope="row">RQ4 Safe stop</th><td><span class="status status-part"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 1.5a6.5 6.5 0 0 1 0 13z" fill="currentColor"/></svg>Fast where tested; reliability open</span></td></tr>
+          </tbody>
+        </table>
+        <p class="cap mt-1">See the <a href="project.html#rqs">Project page</a> for each question in full.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="soilband">
+  <div class="wrap">
+    <div class="stack">
+      <h2>Knuckey Rover</h2>
+      <p>OENG1168 Engineering Capstone, RMIT University, 2026. Built with Knuckey Agricultural Engineering of Winchelsea, Victoria.</p>
+      <div class="partner"><img src="assets/fig/knuckey-logo.png" width="44" height="44" alt="Knuckey Agricultural Engineering logo"><span class="small">Knuckey Agricultural Engineering<br>Est. 1917</span></div>
+    </div>
+    <div>
+      <ul>
+        <li><a href="index.html">Story</a></li>
+        <li><a href="project.html">Project</a></li>
+        <li><a href="rover.html">Rover</a></li>
+        <li><a href="results.html">Results</a></li>
+        <li><a href="knuckey.html">Knuckey</a></li>
+        <li><a href="team.html">Team</a></li>
+      </ul>
+    </div>
+    <div>
+      <ul>
+        <li>Isabella Calder</li><li>Manas Desai</li><li>Alexander McIntosh</li><li>Morne Nel</li><li>Harry Roe</li><li>Harry Roffe</li>
+        <li class="mt-1">Supervisor: Dr Amirali Khodadadian Gostar</li>
+      </ul>
+    </div>
+    <p class="fine">Figures come from the team's final report (draft of 19 October 2026) and the field records of 13 and 14 October 2026. Plots from the report and field records are reproduced as recorded. Aerial imagery City of Melbourne 2020, CC BY 4.0. Corrections from Geoscience Australia AUSCORS.</p>
+  </div>
+</footer>
+
+<script src="assets/js/site.js"></script>
+<script>
+  KR.logRows(document.getElementById('ctrl-chart'), {
+    aria: 'Cross-track error by controller on a log scale. Median: Regulated Pure Pursuit under half a millimetre, Dynamic Window Approach 7.49 metres. 95th percentile: 1 millimetre against 27.97 metres. Maximum: 0.336 metres against 36.3 metres.',
+    domain: [0.0003, 60], ticks: [0.001, 0.01, 0.1, 1, 10], band: [0.02, 0.05], bandLabel: '±20–50 mm', rowH: 62,
+    rows: [
+      { label: 'Median', points: [{ v: 0.0005, series: 'sim', text: '< 0.5 mm', name: 'RPP median', note: 'below 0.5 mm, drawn at 0.5 mm' }, { v: 7.49, series: 'alt', name: 'DWA median' }] },
+      { label: '95th percentile', points: [{ v: 0.001, series: 'sim', name: 'RPP 95th percentile' }, { v: 27.967, series: 'alt', name: 'DWA 95th percentile' }] },
+      { label: 'Maximum', points: [{ v: 0.336, series: 'sim', name: 'RPP maximum' }, { v: 36.336, series: 'alt', name: 'DWA maximum' }] }
+    ]
+  });
+  KR.logColumns(document.getElementById('leg-chart'), {
+    aria: 'Column chart of straight-section cross-track RMSE by leg on a log scale, from 0.12 metres on run 3 N to O up to 2.07 metres on run 2 J to K, all above the 20 to 50 millimetre customer band.',
+    domain: [0.005, 5], ticks: [0.01, 0.1, 1], band: [0.02, 0.05], bandLabel: '',
+    refLine: { v: 0.3, label: '0.30 m' },
+    items: [
+      { group: 'Walk, hand-carried', label: 'leg 1', v: 0.151 }, { group: 'Walk, hand-carried', label: 'leg 3', v: 0.139 }, { group: 'Walk, hand-carried', label: 'leg 5', v: 0.203 },
+      { group: 'Rectangle', label: 'I→J', v: 0.407 }, { group: 'Rectangle', label: 'J→K', v: 1.26 }, { group: 'Rectangle', label: 'K→L', v: 2.02 }, { group: 'Rectangle', label: 'L→I', v: 1.32 },
+      { group: 'Base-station runs', label: '1 I→J', v: 0.296 }, { group: 'Base-station runs', label: '1 J→K', v: 1.68 }, { group: 'Base-station runs', label: '2 J→K', v: 2.07 },
+      { group: 'Base-station runs', label: '2 K→L', v: 0.895 }, { group: 'Base-station runs', label: '2 L→M', v: 0.396, weak: true }, { group: 'Base-station runs', label: '2 M→N', v: null },
+      { group: 'Base-station runs', label: '3 N→O', v: 0.119 }, { group: 'Base-station runs', label: '3 O→P', v: 0.237, weak: true }, { group: 'Base-station runs', label: '3 P→I', v: null }
+    ]
+  });
+</script>
+</body>
+</html>

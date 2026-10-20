@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Knuckey Rover</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="An RMIT engineering capstone with Knuckey Agricultural Engineering: a prototype rover that follows pre-mapped controlled traffic farming tramlines and stops itself when something goes wrong.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&amp;display=swap">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="Knuckey Rover home">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="2" fill="none" stroke="#1C1F1D" stroke-width="1.5"/><g stroke="#1C1F1D" stroke-width="1.4"><path d="M5 11.6 27 8.4"/><path d="M5 17.6 27 14.4"/><path d="M5 23.6 27 20.4"/></g><circle cx="19" cy="15.5" r="3.2" fill="#009CA8" stroke="#F6F3EC" stroke-width="1.6"/></svg>
+      <span><span class="brand-name">Knuckey Rover</span><span class="brand-sub">RMIT × Knuckey</span></span>
+    </a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+    <nav class="nav" id="site-nav" aria-label="Main">
+      <a href="project.html">Project</a>
+      <a href="rover.html">Rover</a>
+      <a href="results.html">Results</a>
+      <a href="knuckey.html">Knuckey</a>
+      <a href="team.html">Team</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- HERO. When the drone footage arrives it replaces the photo in .hero-photo (landscape crop, muted loop). -->
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <p class="eyebrow">OENG1168 Engineering Capstone <span class="n">·</span> RMIT University <span class="n">·</span> 2026</p>
+      <h1 class="display mt-2"><span>Knuckey</span><span>Rover</span></h1>
+      <p class="tagline">A prototype autonomy layer for controlled traffic farming.</p>
+      <p class="intro">Six RMIT engineering students built a 50 kg rover with Knuckey Agricultural Engineering of Winchelsea. It follows the tramlines a grower has already mapped, and it stops itself when something goes wrong. This site sets out how far we got this year and where the rover still falls short.</p>
+      <div class="cta-row">
+        <a class="btn btn-solid" href="#story">Start the story <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v11M3.5 8.5 8 13l4.5-4.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></a>
+        <a class="btn" href="results.html">Go to the results</a>
+      </div>
+    </div>
+    <figure class="hero-photo">
+      <img src="assets/img/p2-grass-2026-10-16.jpg" width="1500" height="2000" alt="Prototype 2, a four-wheeled aluminium rover with three antenna masts, sitting on a mown grass oval beside a painted line, with trees and cloudy sky behind." fetchpriority="high">
+      <figcaption class="cap"><b>Prototype 2</b> on grass, 16 October 2026</figcaption>
+    </figure>
+  </div>
+  <div class="factline">
+    <div class="wrap">
+      <ul>
+        <li><b>760 × 740 mm</b>, about 50 kg</li>
+        <li><b>4 ×</b> ODrive M8325s, 10:1</li>
+        <li><b>12S</b> LiPo, 50.4 V max</li>
+        <li><b>UM982</b> dual-antenna RTK</li>
+        <li><b>ROS 2</b> Jazzy on a Pi 5</li>
+        <li><b>ZED 2i</b> on a Jetson Orin</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- CHAPTERS 01–04: the paddock -->
+<section id="story" class="wrap" data-scrolly aria-label="The paddock">
+  <div class="scrolly">
+    <div class="scrolly-stage" aria-hidden="true">
+      <div class="paddock" data-paddock>
+        <div class="hud">P-Middle West, near Winchelsea<br><b>73.17 ha</b> · AB line <b>762.1 m</b></div>
+        <div class="paddock-canvas"><canvas></canvas></div>
+      </div>
+    </div>
+    <div class="scrolly-steps">
+      <article class="step">
+        <div class="step-card">
+          <p class="eyebrow"><span class="n">01</span> The problem</p>
+          <h2 class="h-section">Seeding can't wait for a driver</h2>
+          <p>Broadacre farms struggle to hire skilled operators, and ABARES surveys found the difficulty grows the further a farm sits from a big town. Seeding still has to happen inside a few weeks. South Australian trials that sowed wheat three weeks late lost about a tonne per hectare.</p>
+          <div class="stats mt-1">
+            <div class="stat"><span class="stat-v">1<small>t/ha</small></span><span class="stat-l">lost to a three-week sowing delay in wheat, Washpool SA, 2019 <span class="src src-ref">Ref</span></span></div>
+            <div class="stat"><span class="stat-v">±20–50<small>mm</small></span><span class="stat-l">how closely neighbouring passes must line up, set by the seeder's tine spacing <span class="src src-site">Site visit</span></span></div>
+          </div>
+        </div>
+      </article>
+      <article class="step">
+        <div class="step-card">
+          <p class="eyebrow"><span class="n">02</span> Controlled traffic farming</p>
+          <h2 class="h-section">The lines are already on the ground</h2>
+          <p>Controlled traffic farming keeps every machine on the same permanent wheel tracks, called tramlines, so nothing ever drives on the soil between them. Growers map the tramlines with RTK GPS and reuse them every season. For a robot, that is about as much structure as a paddock can offer.</p>
+          <p>About 30% of Australian cropland runs CTF, and more than 60% in central Queensland. South Australia, the Victorian Mallee and the other low-rainfall zones in the south-east sit near 5%. <span class="src src-ref">Ref</span></p>
+          <p class="small muted">The paddock drawn here is P-Middle West near Winchelsea, built from the grower's own John Deere guidance line.</p>
+        </div>
+      </article>
+      <article class="step">
+        <div class="step-card">
+          <p class="eyebrow"><span class="n">03</span> The approach</p>
+          <h2 class="h-section">Follow the map the grower already has</h2>
+          <p>Knuckey's customers already map their paddocks, so the rover doesn't build a map of its own. A script turns the grower's AB line into 162 waypoints: 81 working passes of 690.1 m, each with its own heading, and a 12 m step across the headland between them.</p>
+          <p>The whole plan lives on the rover. If the radio drops a packet, the rover still knows where it is going next.</p>
+        </div>
+      </article>
+      <article class="step">
+        <div class="step-card">
+          <p class="eyebrow"><span class="n">04</span> Simulation</p>
+          <h2 class="h-section">One paddock, 8 hours 28 minutes, no aborts</h2>
+          <p>We drove the full route in NVIDIA Isaac Sim with the real ROS 2 navigation stack: 56.9 km at 2 m/s in a single attempt, with no recovery behaviours and no restarts.</p>
+          <div class="stats mt-1">
+            <div class="stat"><span class="stat-v">99.95%</span><span class="stat-l">of the 67 ha target area covered by a 12 m implement swept along the logged path <span class="src src-sim">Sim</span></span></div>
+            <div class="stat"><span class="stat-v">5.7<small>mm</small></span><span class="stat-l">RMS error in the 12 m spacing between neighbouring passes <span class="src src-sim">Sim</span></span></div>
+          </div>
+          <p class="small muted">The simulated rover is a 20 kg, 0.4 × 0.3 m body with noise-free GNSS by default. Read these figures as a best case for the navigation software. They don't predict how Prototype 2 will track.</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- CHAPTER 05: localisation -->
+<section class="band band-paper2" aria-labelledby="ch5">
+  <div class="wrap cols-2-wide">
+    <div class="chapter">
+      <p class="eyebrow"><span class="n">05</span> Localisation</p>
+      <h2 id="ch5">Bare soil gives a camera nothing to hold onto</h2>
+      <div class="prose stack">
+        <p>We started out planning visual and LiDAR SLAM. Prototype 1 and the research both pointed the same way: a prepared paddock looks the same for hundreds of metres, so feature matching drifts, and dust and glare make it worse. Part-way through semester 1 we dropped SLAM and built around an absolute position reference instead.</p>
+        <p>Prototype 2 fuses three sensors that fail in different ways. Two extended Kalman filters combine them: a local filter that stays smooth for the controller, and a global filter that stays anchored to the paddock.</p>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table class="data">
+        <thead><tr><th scope="col">Sensor</th><th scope="col">What it gives</th><th scope="col">Where it fails</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Unicore UM982 dual-antenna RTK</th><td>Centimetre position, and a heading from the antenna baseline even when the rover is stationary</td><td>Needs a live correction stream and open sky</td></tr>
+          <tr><th scope="row">ZED 2i inertial unit</th><td>Angular rate and acceleration between GNSS fixes</td><td>Drifts over time</td></tr>
+          <tr><th scope="row">Encoders on four ODrive S1 drives</th><td>Wheel speed, giving forward speed and yaw rate</td><td>A skid-steer rover slips sideways in every turn</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- CHAPTER 06: the machine -->
+<section class="wrap" data-scrolly aria-label="The machine">
+  <div class="scrolly">
+    <div class="scrolly-stage">
+      <div class="photo-stage">
+        <figure class="shot on" data-shot="p1" aria-hidden="false">
+          <svg viewBox="0 0 420 520" role="img" aria-label="Top view drawn to scale: Prototype 2's 760 by 740 millimetre frame with Prototype 1's 270 by 180 millimetre body inside one corner, and below them a 260 millimetre wheel beside a 69 millimetre wheel.">
+            <g font-family="Archivo, Helvetica Neue, Arial, sans-serif" font-size="11" fill="#575B56">
+              <rect x="40" y="30" width="304" height="296" fill="#EFE8DA" stroke="#1C1F1D" stroke-width="1.5"/>
+              <text x="192" y="20" text-anchor="middle">Prototype 2 · 760 mm</text>
+              <text x="356" y="178" transform="rotate(90 356 178)" text-anchor="middle">740 mm</text>
+              <rect x="56" y="238" width="108" height="72" fill="#009CA8" fill-opacity="0.18" stroke="#00666F" stroke-width="1.5"/>
+              <text x="110" y="278" text-anchor="middle" fill="#00666F">P1</text>
+              <text x="110" y="228" text-anchor="middle">270 × 180 mm</text>
+              <line x1="40" x2="380" y1="350" y2="350" stroke="#D8D1C2"/>
+              <text x="120" y="374" text-anchor="middle">Wheel ⌀ 260 mm</text>
+              <circle cx="120" cy="436" r="52" fill="none" stroke="#1C1F1D" stroke-width="1.5"/>
+              <circle cx="120" cy="436" r="18" fill="none" stroke="#B9B3A6"/>
+              <text x="262" y="440" text-anchor="middle">Wheel ⌀ 69 mm</text>
+              <circle cx="262" cy="474" r="13.8" fill="none" stroke="#00666F" stroke-width="1.5"/>
+              <text x="40" y="514">Top view and wheels at one scale, 0.4 px per mm</text>
+            </g>
+          </svg>
+          <figcaption class="cap"><b>To scale.</b> Prototype 1 fits inside one corner of Prototype 2. No photograph of Prototype 1 is in the project records yet.</figcaption>
+        </figure>
+        <figure class="shot" data-shot="chassis" aria-hidden="true">
+          <img src="assets/img/p2-chassis-2026-08-21.jpg" width="1200" height="1600" loading="lazy" alt="The bare Prototype 2 chassis on a workbench: aluminium extrusion frame, four pneumatic wheels, motor and gearbox units at each wheel, and a perforated top plate.">
+          <figcaption class="cap"><b>21 August 2026.</b> Frame, wheels and driveline before the electronics went in.</figcaption>
+        </figure>
+        <figure class="shot" data-shot="sensors" aria-hidden="true">
+          <img src="assets/img/p2-sensors-2026-09-16.jpg" width="1200" height="1600" loading="lazy" alt="Prototype 2 on the lab floor with its electronics fitted: two GNSS antenna masts, a stereo camera on top, red emergency-stop buttons and bundles of red and black wiring.">
+          <figcaption class="cap"><b>16 September 2026.</b> Antennas, stereo camera, E-stops and wiring fitted.</figcaption>
+        </figure>
+        <figure class="shot" data-shot="grass" aria-hidden="true">
+          <video muted loop playsinline preload="none" poster="assets/video/p2-grass-2026-10-16-poster.jpg" aria-label="Prototype 2 driving across a grass slope with a team member walking beside it.">
+            <source src="assets/video/p2-grass-2026-10-16.mp4" type="video/mp4">
+          </video>
+          <figcaption class="cap"><b>16 October 2026.</b> Prototype 2 on grass.</figcaption>
+        </figure>
+      </div>
+    </div>
+    <div class="scrolly-steps">
+      <article class="step" data-shot="p1">
+        <div class="step-card">
+          <p class="eyebrow"><span class="n">06</span> The machine</p>
+          <h2 class="h-section">Two prototypes</h2>
+          <p>Prototype 1 was a 3D-printed box, 270 × 180 mm, on four N20 gearmotors. It proved the software chain from a PlayStation controller, through ROS 2 on a Raspberry Pi 5, down to the wheels.</p>
+          <p>It taught us two things the hard way. A control loop can be perfectly stable while it drives the wrong way. And a Pi that shares a power rail with the motors corrupts its own SD card.</p>
+        </div>
+      </article>
+      <article class="step" data-shot="chassis">
+        <div class="step-card">
+          <p class="eyebrow">21 August 2026</p>
+          <h3 class="h-sub">A frame sized for a paddock</h3>
+          <p>Prototype 2 is 4040 aluminium extrusion on 260 mm pneumatic wheels. Each wheel has its own ODrive M8325s motor through a 10:1 gearbox, sized for a 6 km/h design speed: 122 rpm at the wheel, 1,220 rpm at the motor.</p>
+          <p>The first motor hubs were 3D printed and split along their layer lines inside the gearbox. Machined aluminium hubs replaced them.</p>
+        </div>
+      </article>
+      <article class="step" data-shot="sensors">
+        <div class="step-card">
+          <p class="eyebrow">16 September 2026</p>
+          <h3 class="h-sub">Power, compute and sensors</h3>
+          <p>Two 16,000 mAh 6S packs in series give 50.4 V through a Batrium battery management system and two contactors. A Raspberry Pi 5 runs the rover software, a Jetson Orin runs obstacle detection on the ZED 2i stereo camera, and a long-range radio links the rover to a base station.</p>
+          <p>Prototype 2 first drove on 3 September.</p>
+        </div>
+      </article>
+      <article class="step" data-shot="grass">
+        <div class="step-card">
+          <p class="eyebrow">16 October 2026</p>
+          <h3 class="h-sub">Out of the lab</h3>
+          <p>By mid-October the rover was running on grass. The build record, with the driveline, the power system and the software layers, is on the <a href="rover.html">Rover page</a>.</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- CHAPTER 07: safety -->
+<section class="band band-night" aria-labelledby="ch7">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow"><span class="n">07</span> Safety</p>
+      <h2 id="ch7" class="h-section">Six ways to stop</h2>
+      <p class="lede">Nobody rides on this machine, so it has to stop itself, and the part that stops it can't be the part that failed. We put each stop in the lowest layer that can still do the job.</p>
+    </div>
+    <div class="layers">
+      <div class="layer-group">
+        <h3>Works with every computer off</h3>
+        <div class="layer layer-hw"><span class="layer-i" aria-hidden="true">HW</span><h4>Physical E-stop <span class="dep">Hardware only</span></h4><p>Opens contactor 1, which drops logic and motor power together.</p></div>
+        <div class="layer layer-hw"><span class="layer-i" aria-hidden="true">HW</span><h4>BMS fault <span class="dep">BMS relay</span></h4><p>A cell, temperature or current limit opens the Watchmon relay, and contactor 1 with it.</p></div>
+        <div class="layer layer-hw"><span class="layer-i" aria-hidden="true">HW</span><h4>Radio link loss <span class="dep">Radio + relay</span></h4><p>No valid frame for 0.5 s. The heartbeat relay opens contactor 2 and the bridge publishes zero velocity.</p></div>
+      </div>
+      <div class="layer-group">
+        <h3>Needs the ROS 2 software</h3>
+        <div class="layer layer-sw"><span class="layer-i" aria-hidden="true">SW</span><h4>Low voltage <span class="dep">State machine</span></h4><p>Pack or bus below 40.8 V, which is 3.4 V a cell. Zero velocity, and contactor 2 opens.</p></div>
+        <div class="layer layer-sw"><span class="layer-i" aria-hidden="true">SW</span><h4>Remote E-stop <span class="dep">Radio + ROS 2</span></h4><p>The stop key at the base station. Zero velocity, the mission halts, and contactor 2 opens.</p></div>
+        <div class="layer layer-sw"><span class="layer-i" aria-hidden="true">SW</span><h4>Obstacle <span class="dep">Jetson + ROS 2</span></h4><p>Anything inside 3 m, or a camera that goes silent. The rover holds until the way is clear, then carries on.</p></div>
+      </div>
+    </div>
+    <div class="stats mt-3">
+      <div class="stat"><span class="stat-v">100<small>ms</small></span><span class="stat-l">for the physical E-stop to pull the main bus below 1 V <span class="src src-rover">Rover</span></span></div>
+      <div class="stat"><span class="stat-v">0.5<small>m</small></span><span class="stat-l">stopping distance at about 1 m/s, inside the 1 m target <span class="src src-rover">Rover</span></span></div>
+      <div class="stat"><span class="stat-v">2 of 2</span><span class="stat-l">faults in autonomous mode that the rover's own monitoring caught and latched <span class="src src-field">Field</span></span></div>
+    </div>
+    <div class="note mt-2">
+      <span class="note-label">Not yet shown</span>
+      <p>A physical stop on radio link loss with the rover moving. The software dry run passed this case. The moving rover hasn't been tested.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CHAPTER 08: field -->
+<section class="band" aria-labelledby="ch8">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow"><span class="n">08</span> Field test</p>
+      <h2 id="ch8" class="h-section">Argyle Square, 13 and 14 October</h2>
+    </div>
+    <div class="cols-2">
+      <div class="prose stack">
+        <p>We tested on the paving at Argyle Square in Carlton. Its painted lines and centre disc show up in aerial imagery, which gave us fixed geometry to measure against. RTK corrections came over NTRIP from Geoscience Australia's AUSCORS station EML200AUS0, about 1.4 km away.</p>
+        <p>First we tested the receiver on its own. Parked over the centre of the disc for ten minutes, a 3D-printed capture box held an RTK fix the whole time, and its position spread 3.8 mm (1σ). Carried twice round a 39 m painted loop, the two laps agreed to 0.057 m RMS.</p>
+        <p>Then the rover. The operator sent ARM, GO and AUTO from the base-station touchscreen, and Prototype 2 drove itself over the radio link at up to 0.25 m/s. Across three runs it reached all eight points, and it passed within 0.08–0.19 m of every point it reached on RTK.</p>
+      </div>
+      <div class="grid-auto">
+        <figure class="fig">
+          <img src="assets/img/capture-box-r0.jpg" width="1400" height="788" loading="lazy" alt="An orange 3D-printed box with two antennas sitting on the dark centre dot of a large painted disc in a paved square.">
+          <figcaption class="cap"><b>Reference point R0.</b> The capture box over the centre of the disc.</figcaption>
+        </figure>
+        <figure class="fig">
+          <img src="assets/img/field-setup-2026-10-14.jpg" width="1400" height="1050" loading="lazy" alt="A team member on a park bench with a laptop and the base station, Prototype 2 parked on the path in front, with toolboxes and a fire extinguisher beside the bench.">
+          <figcaption class="cap"><b>14 October.</b> Prototype 2, the base station and the laptop streaming corrections.</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <div class="mt-4">
+      <h3 class="h-sub">How close is close enough?</h3>
+      <p class="muted small mt-1">Lateral error in each test against the ±20–50 mm the Knuckey site visit set for neighbouring passes. Log scale.</p>
+      <div class="legend mt-2" aria-hidden="true"><span><i style="background:var(--c-sim)"></i>Simulation</span><span><i style="background:var(--c-field)"></i>Field, Argyle Square</span><span><i class="band-key"></i>Customer ±20–50 mm</span></div>
+      <div class="chart" id="gap-chart"></div>
+      <details class="table-twin">
+        <summary>Show the numbers as a table</summary>
+        <div class="table-wrap">
+          <table class="data">
+            <thead><tr><th scope="col">Test</th><th scope="col">Measure</th><th scope="col" class="n">Value</th><th scope="col">Source</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Receiver parked on R0, 10 min</th><td>Position spread, 1σ east (north 3.7 mm)</td><td class="n">3.8 mm</td><td>Field, 13 Oct</td></tr>
+              <tr><th scope="row">Simulated full paddock, noise-free GNSS</th><td>Neighbouring-pass spacing error, RMS</td><td class="n">5.7 mm</td><td>Simulation</td></tr>
+              <tr><th scope="row">Simulated 17 passes, RTK-grade noise</th><td>Neighbouring-pass spacing error, RMS</td><td class="n">15.8 mm</td><td>Simulation</td></tr>
+              <tr><th scope="row">Receiver carried round a 39 m loop</th><td>Lap-to-lap offset, RMS</td><td class="n">57 mm</td><td>Field, 13 Oct</td></tr>
+              <tr><th scope="row">Prototype 2, three long rows</th><td>Cross-track error, RMSE on RTK samples</td><td class="n">237–895 mm</td><td>Field, 14 Oct</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+    </div>
+
+    <div class="cols-2 mt-3">
+      <div class="prose stack">
+        <p>Between the points, the rover sat 0.24–0.90 m off the line on the long rows, mostly as a steady offset to one side. The receiver resolves millimetres, so the gap points to the control loop: heading or steering bias in the simple route executor that drove these runs, and positions reaching it at 2 Hz, rounded to about 0.1 m.</p>
+        <p>The controller that tracked to millimetres in simulation hasn't run on Prototype 2 yet. Putting it there is the next job.</p>
+      </div>
+      <div class="note is-gap">
+        <span class="note-label">Not yet shown</span>
+        <p>The ±20–50 mm tolerance on the real rover. Each field run was a single attempt on paving at 0.25 m/s, and the GNSS measured itself; nobody surveyed the rover's position independently.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CHAPTER 09: next -->
+<section class="band band-paper2" aria-labelledby="ch9">
+  <div class="wrap cols-2-wide">
+    <div class="chapter">
+      <p class="eyebrow"><span class="n">09</span> Next</p>
+      <h2 id="ch9">What the next team inherits</h2>
+      <p class="prose muted">Future RMIT capstone groups take the Knuckey Rover on from here, with the hardware designs, wiring records, ROS 2 packages, simulation and test procedures. These are the jobs at the top of the list.</p>
+    </div>
+    <ol class="next-list">
+      <li><div><b>Run the simulated controller on Prototype 2</b><span>Continuous path following with Regulated Pure Pursuit, the heading check before each pass and the staged launch.</span></div></li>
+      <li><div><b>Measure against a surveyed tramline</b><span>So tracking error can be read against the ground, not only against the waypoints.</span></div></li>
+      <li><div><b>Act on lost RTK</b><span>Twice the corrections dropped and the rover kept driving on a metre-level fix. Fix type and correction age should slow or stop it.</span></div></li>
+      <li><div><b>Lock the CAN connectors</b><span>Pins pulled out of the ODrive plugs during commissioning. Voltage monitoring and drive commands both run over that bus.</span></div></li>
+      <li><div><b>Add a second obstacle sensor</b><span>LiDAR, for rocks the same colour as the soil.</span></div></li>
+      <li><div><b>Plug into the grower's equipment</b><span>Import exported John Deere field maps, and take NMEA from the receiver the grower already owns.</span></div></li>
+    </ol>
+  </div>
+</section>
+
+<section class="band-tight" aria-label="More pages">
+  <div class="wrap">
+    <div class="pagelinks">
+      <a class="pagelink" href="project.html"><b>Project <span aria-hidden="true">→</span></b><span>The question, the four research questions and where each one stands.</span></a>
+      <a class="pagelink" href="rover.html"><b>Rover <span aria-hidden="true">→</span></b><span>Prototype 1 and 2, power and interlocks, and the ROS 2 software layers.</span></a>
+      <a class="pagelink" href="results.html"><b>Results <span aria-hidden="true">→</span></b><span>Every simulation and field number, with its test conditions.</span></a>
+      <a class="pagelink" href="knuckey.html"><b>Knuckey <span aria-hidden="true">→</span></b><span>Our industry partner, and what the site visit changed in the design.</span></a>
+      <a class="pagelink" href="team.html"><b>Team <span aria-hidden="true">→</span></b><span>The six of us, our supervisor and who built what.</span></a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="soilband">
+  <div class="wrap">
+    <div class="stack">
+      <h2>Knuckey Rover</h2>
+      <p>OENG1168 Engineering Capstone, RMIT University, 2026. Built with Knuckey Agricultural Engineering of Winchelsea, Victoria.</p>
+      <div class="partner"><img src="assets/fig/knuckey-logo.png" width="44" height="44" alt="Knuckey Agricultural Engineering logo"><span class="small">Knuckey Agricultural Engineering<br>Est. 1917</span></div>
+    </div>
+    <div>
+      <ul>
+        <li><a href="index.html">Story</a></li>
+        <li><a href="project.html">Project</a></li>
+        <li><a href="rover.html">Rover</a></li>
+        <li><a href="results.html">Results</a></li>
+        <li><a href="knuckey.html">Knuckey</a></li>
+        <li><a href="team.html">Team</a></li>
+      </ul>
+    </div>
+    <div>
+      <ul>
+        <li>Isabella Calder</li><li>Manas Desai</li><li>Alexander McIntosh</li><li>Morne Nel</li><li>Harry Roe</li><li>Harry Roffe</li>
+        <li class="mt-1">Supervisor: Dr Amirali Khodadadian Gostar</li>
+      </ul>
+    </div>
+    <p class="fine">Figures come from the team's final report (draft of 19 October 2026) and the field records of 13 and 14 October 2026. Tags show where each number comes from. Sim: Isaac Sim. Field: Argyle Square trials. Rover: commissioning tests on Prototype 2. Bench: software bench tests. Site visit: Knuckey, Winchelsea, 1 May 2026. Ref: published research cited in the report.</p>
+  </div>
+</footer>
+
+<script src="assets/js/site.js"></script>
+<script src="assets/js/paddock.js"></script>
+<script>
+  KR.logRows(document.getElementById('gap-chart'), {
+    aria: 'Dot chart on a log scale from 2 millimetres to 2 metres. Customer band 20 to 50 millimetres. Receiver parked 3.8 millimetres; simulated pass spacing 5.7 millimetres with ideal GNSS and 15.8 with RTK-grade noise; receiver lap to lap 57 millimetres; Prototype 2 cross-track 237 to 895 millimetres.',
+    domain: [0.002, 2], ticks: [0.002, 0.01, 0.1, 1, 2], band: [0.02, 0.05],
+    bandLabel: 'customer ±20–50 mm', bandLabelShort: '±20–50 mm',
+    rows: [
+      { label: 'Receiver, parked (1σ)', tag: 'Field', series: 'field', points: [{ v: 0.0038, series: 'field', note: '10 min on R0, RTK fixed throughout' }] },
+      { label: 'Sim, pass spacing, ideal GNSS', tag: 'Sim', series: 'sim', points: [{ v: 0.0057, series: 'sim', note: '81 passes, 51,944 stations, RMS' }] },
+      { label: 'Sim, pass spacing, RTK-grade noise', tag: 'Sim', series: 'sim', points: [{ v: 0.0158, series: 'sim', note: '17 passes, RMS; max 57.8 mm' }] },
+      { label: 'Receiver, carried, lap to lap', tag: 'Field', series: 'field', points: [{ v: 0.057, series: 'field', note: '39 m loop, 756 stations, RMS' }] },
+      { label: 'Prototype 2, cross-track, long rows', tag: 'Field', series: 'field', range: [0.237, 0.895], note: 'RMSE on RTK samples, 0.25 m/s' }
+    ]
+  });
+</script>
+</body>
+</html>

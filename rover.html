@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rover · Knuckey Rover</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Prototype 1 and Prototype 2 of the Knuckey Rover: chassis, drivetrain, 48 V power and interlocks, and the ROS 2 software layers.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&amp;display=swap">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="Knuckey Rover home">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="2" fill="none" stroke="#1C1F1D" stroke-width="1.5"/><g stroke="#1C1F1D" stroke-width="1.4"><path d="M5 11.6 27 8.4"/><path d="M5 17.6 27 14.4"/><path d="M5 23.6 27 20.4"/></g><circle cx="19" cy="15.5" r="3.2" fill="#009CA8" stroke="#F6F3EC" stroke-width="1.6"/></svg>
+      <span><span class="brand-name">Knuckey Rover</span><span class="brand-sub">RMIT × Knuckey</span></span>
+    </a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+    <nav class="nav" id="site-nav" aria-label="Main">
+      <a href="project.html">Project</a>
+      <a href="rover.html" aria-current="page">Rover</a>
+      <a href="results.html">Results</a>
+      <a href="knuckey.html">Knuckey</a>
+      <a href="team.html">Team</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<section class="page-head">
+  <div class="wrap">
+    <p class="eyebrow">The rover</p>
+    <h1>Two prototypes and the software between them</h1>
+    <p class="lede">Prototype 1 proved the software and control chain on a cheap, easy-to-change platform. Prototype 2 scaled up the chassis, drivetrain and power so the project could be tested outdoors.</p>
+    <nav class="toc" aria-label="On this page">
+      <a href="#compare">P1 and P2</a>
+      <a href="#build">The build</a>
+      <a href="#power">Power and interlocks</a>
+      <a href="#software">Software layers</a>
+      <a href="#mission">Mission node</a>
+      <a href="#localisation">Localisation</a>
+      <a href="#base">Base station</a>
+      <a href="#dryrun">Dry run</a>
+    </nav>
+  </div>
+</section>
+
+<section id="compare" class="band" aria-labelledby="h-compare">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">P1 and P2</p>
+      <h2 id="h-compare" class="h-section">What changed between prototypes</h2>
+    </div>
+    <div class="table-wrap">
+      <table class="data">
+        <thead><tr><th scope="col"></th><th scope="col">Prototype 1</th><th scope="col">Prototype 2</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Chassis</th><td>3D-printed PLA box, 270 × 180 × 100 mm</td><td>4040 aluminium extrusion, about 760 × 740 mm and 50 kg</td></tr>
+          <tr><th scope="row">Drive</th><td>Four N20 gearmotors (150:1) with Hall encoders, two TB6612FNG drivers</td><td>Four ODrive M8325s motors through 10:1 gearboxes, one ODrive S1 per wheel</td></tr>
+          <tr><th scope="row">Wheels and speed</th><td>69 mm wheels; about 0.7 m/s at the 200 rpm firmware limit</td><td>260 mm pneumatic wheels; 6 km/h (1.67 m/s) design speed</td></tr>
+          <tr><th scope="row">Low-level control</th><td>ESP32 running two speed PID loops over USB serial</td><td>ODrive S1 controllers on a shared CAN bus</td></tr>
+          <tr><th scope="row">Power</th><td>Two 3S LiPo packs, one for logic and one for the motors</td><td>Two 6S packs in series (12S, 50.4 V max), Batrium BMS, DC-DC converters for compute</td></tr>
+          <tr><th scope="row">Compute</th><td>Raspberry Pi 5; localisation on a separate laptop</td><td>Raspberry Pi 5 for the rover software; Jetson Orin for obstacle detection</td></tr>
+          <tr><th scope="row">Positioning</th><td>u-blox NEO-M9N single antenna, MPU-6050 IMU, HMC5883L magnetometer on a Pico 2 hub</td><td>Unicore UM982 dual-antenna RTK, ZED 2i IMU, motor encoders</td></tr>
+          <tr><th scope="row">Operator link</th><td>Wi-Fi hotspot on the Pi, PlayStation controller</td><td>Long-range radio to a base station</td></tr>
+          <tr><th scope="row">Stopping</th><td>Ultrasonic sensors</td><td>Physical E-stop and contactors, state-machine stop, remote stop</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="cols-2 mt-3">
+      <div class="prose stack">
+        <h3 class="h-small">What Prototype 1 taught us</h3>
+        <ul>
+          <li>Soil gives a robot nothing to recognise. We dropped LiDAR and visual SLAM for GNSS fused with IMU and wheel odometry, and that choice shapes the whole project.</li>
+          <li>A control loop can be stable while it drives the wrong way. Motor and encoder direction have to agree physically, not be patched in software.</li>
+          <li>Motors and the computer can't share a power rail. Ours corrupted the Pi's SD card on boot.</li>
+          <li>Safety reflexes belong in a layer that keeps working when the main computer crashes.</li>
+        </ul>
+      </div>
+      <div class="stack">
+        <h3 class="h-small">First numbers</h3>
+        <div class="stats">
+          <div class="stat"><span class="stat-v">0.22<small>m</small></span><span class="stat-l">endpoint error over a 74 m walk with the Prototype 1 sensor stack <span class="src src-field">Field</span></span></div>
+          <div class="stat"><span class="stat-v">32<small>of 34</small></span><span class="stat-l">waypoints reached in Isaac Sim with two filters, up from 28 <span class="src src-sim">Sim</span></span></div>
+        </div>
+        <p class="small muted">The same walk exposed a magnetometer calibration fault that overstated path length about 2.4 times.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="build" class="band band-paper2" aria-labelledby="h-build">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">The build</p>
+      <h2 id="h-build" class="h-section">Prototype 2, July to October</h2>
+      <p class="lede">The team built Prototype 2 together to Morne Nel's electrical design. It first drove on 3 September.</p>
+    </div>
+    <div class="photo-grid">
+      <figure class="fig"><img src="assets/img/p2-chassis-2026-08-21.jpg" width="1200" height="1600" loading="lazy" alt="Bare Prototype 2 chassis with four wheels and motor units on an orange workbench."><figcaption class="cap"><b>21 Aug.</b> Frame and driveline.</figcaption></figure>
+      <figure class="fig"><img src="assets/img/p2-built-2026-09-09.jpg" width="1200" height="1600" loading="lazy" alt="Prototype 2 on a workbench with an orange enclosure on top, two antenna masts, a stereo camera, a red E-stop button and a power supply on the side."><figcaption class="cap"><b>9 Sep.</b> Enclosure, antennas and E-stop.</figcaption></figure>
+      <figure class="fig"><img src="assets/img/p2-sensors-2026-09-16.jpg" width="1200" height="1600" loading="lazy" alt="Prototype 2 on the lab floor seen from the front, with camera, antennas, E-stops and wiring."><figcaption class="cap"><b>16 Sep.</b> Sensors and wiring fitted.</figcaption></figure>
+      <figure class="fig"><img src="assets/img/p2-kerb-2026-10-16.jpg" width="1200" height="1600" loading="lazy" alt="Low view of Prototype 2 on an asphalt path beside a kerb, showing the wheels and the power supply on its side."><figcaption class="cap"><b>16 Oct.</b> On an asphalt path.</figcaption></figure>
+    </div>
+
+    <div class="cols-2 mt-4">
+      <div class="stack">
+        <h3 class="h-small">Specification</h3>
+        <dl class="spec">
+          <dt>Chassis</dt><dd>4040 aluminium T-slot extrusion, T-nuts and gusseted corner brackets; aluminium motor and gearbox plates</dd>
+          <dt>Size</dt><dd>About 760 × 740 mm, about 50 kg</dd>
+          <dt>Drive</dt><dd>Skid steer. Four ODrive M8325s motors, 10:1 gearboxes, one ODrive S1 driver each</dd>
+          <dt>Speed</dt><dd>6 km/h design: 122 rpm at a 260 mm wheel, 1,220 rpm at the motor</dd>
+          <dt>Battery</dt><dd>Two 16,000 mAh 6S Tattu packs in series, 50.4 V max</dd>
+          <dt>BMS</dt><dd>Batrium Watchmon, Shuntmon and two K9 cell monitors, on CAN</dd>
+          <dt>Compute</dt><dd>Raspberry Pi 5 running ROS 2 Jazzy; Jetson Orin for obstacle detection</dd>
+          <dt>Positioning</dt><dd>Holybro H-RTK Unicore UM982, dual antenna, through a Pixhawk 6C</dd>
+          <dt>Perception</dt><dd>ZED 2i stereo camera, which also supplies the IMU</dd>
+          <dt>Link</dt><dd>Holybro long-range telemetry radio to a Pi 5 base station</dd>
+        </dl>
+      </div>
+      <div class="stack">
+        <h3 class="h-small">What broke, and what replaced it</h3>
+        <dl class="spec">
+          <dt>Motor hubs</dt><dd>Printed in PLA for quick iteration, they split along the layer lines inside the gearbox. Replaced with machined aluminium.</dd>
+          <dt>Front pivot</dt><dd>An ASA centre pivot with a deep-groove bearing broke as the rover got heavier. Replaced with a stiff joint.</dd>
+          <dt>Battery latch</dt><dd>A levered latch became unreachable once the hardware plate was fitted. Replaced with a toothed slide locked by a pin.</dd>
+          <dt>Gearbox support</dt><dd>Each motor, hub and gearbox hung from its ends and rubbed at the hub. A bracket along two edges of the gearbox, added mid-September, made the rover run noticeably smoother.</dd>
+          <dt>CAN pins</dt><dd>Pins pulled out of the ODrive plug housings and had to be rewired. Locking connectors are needed before field use.</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="power" class="band" aria-labelledby="h-power">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Power and interlocks</p>
+      <h2 id="h-power" class="h-section">Two contactors, two kinds of stop</h2>
+      <p class="lede">Every contactor and relay contact in the chain is normally open, so losing coil power opens the circuit. The only normally closed contact is the E-stop button itself.</p>
+    </div>
+    <div class="cols-2">
+      <div class="prose stack">
+        <p><b>Contactor 1 feeds everything that thinks.</b> Its coil runs through the BMS relay in series with the physical E-stop. When it closes, the main bus powers the 5 V, 12 V and 24 V converters, and through them the Pi, the Jetson, the radio and the GNSS receiver. Opening it switches off every computer on the rover, and also removes the coil supply for contactor 2.</p>
+        <p><b>Contactor 2 feeds the motors.</b> Its coil is switched through two relays in series plus a pre-charge path. Opening it removes motor power but keeps the computers running, so the rover can still report what happened.</p>
+        <p>Flyback diodes protect both coils, and the Pi reaches the relay board through optoisolators so no ground path links the voltage domains. The BMS sits on its own 12 V supply ahead of both contactors, so it stays awake whatever they do.</p>
+      </div>
+      <div class="stack-lg">
+        <div class="stack">
+          <h3 class="h-small">Arming sequence</h3>
+          <div class="flow" role="img" aria-label="DISARMED, then PRECHARGE, then ARMED_IDLE, then MANUAL or AUTO. Any safety event latches E-STOP.">
+            <span class="st">DISARMED</span><span class="ar">→</span><span class="st">PRECHARGE</span><span class="ar">→</span><span class="st">ARMED_IDLE</span><span class="ar">→</span><span class="st go">MANUAL</span><span class="ar">|</span><span class="st go">AUTO</span>
+          </div>
+          <div class="flow"><span class="ar">any safety event →</span><span class="st stop">E-STOP, latched</span></div>
+          <ol class="prose small" style="padding-left:1.2em">
+            <li>A fresh arm request arrives from the base station. A request still held after a reboot does nothing, so the rover can't arm itself.</li>
+            <li>A solid-state relay closes through a 50 Ω resistor, limiting inrush to about 1 A at 50.4 V, and the drive capacitors charge for 5 s.</li>
+            <li>If battery and bus voltage agree within 2 V, contactor 2 closes and the pre-charge relay releases. A bigger gap means a short or a failed drive, and the sequence aborts to DISARMED.</li>
+          </ol>
+        </div>
+        <div class="stack">
+          <h3 class="h-small">BMS limits</h3>
+          <p class="small muted">From one of Batrium's pre-mapped LiPo profiles, not set by hand. Any breach opens the BMS relay and contactor 1 with no software involved.</p>
+          <div class="table-wrap">
+            <table class="data" style="min-width:0">
+              <tbody>
+                <tr><th scope="row">Cell over-voltage</th><td class="n">4.05 V</td></tr>
+                <tr><th scope="row">Cell under-voltage</th><td class="n">3.00 V</td></tr>
+                <tr><th scope="row">Discharge temperature</th><td class="n">−20 to 60 °C</td></tr>
+                <tr><th scope="row">Peak current</th><td class="n">80 A</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="small muted">On top of that, the state machine stops the rover if pack or bus voltage falls below 40.8 V (12 × 3.4 V) while armed.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="software" class="band band-paper2" aria-labelledby="h-sw">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Software layers</p>
+      <h2 id="h-sw" class="h-section">Each job runs in its own ROS 2 node</h2>
+      <p class="lede">A valid velocity command can exist in the ROS graph without being allowed to reach the motors. Where motion comes from, whether it's permitted, and how a wheel turns are separate responsibilities.</p>
+    </div>
+    <div class="arch-wrap">
+      <div class="arch" role="img" aria-label="Command flow from the base station over the radio to the LoRa bridge, then either the mission node and Nav2 for autonomous driving or tele-operation for manual driving, into the selection node, the drive node and four ODrive S1 controllers on CAN.">
+        <div class="node hw"><b>Base station</b><span class="t">plan · arm · mode · E-stop · tele-op</span><p>Raspberry Pi 5 with two screens and a matching radio.</p></div>
+        <div class="link">control frames 10 Hz down · status 2 Hz up</div>
+        <div class="node"><b>LoRa bridge</b><span class="t">packets ↔ ROS 2 topics</span><p>Reports the link lost after 0.5 s without a valid frame, removes the arm request and publishes zero velocity.</p></div>
+        <div class="link">plan, mode, tele-op</div>
+        <div class="arch-row two">
+          <div class="node"><b>Mission node → Nav2</b><span class="t">/cmd_vel_nav</span><p>Holds the plan, sends Nav2 one goal at a time, reports progress at 2 Hz.</p></div>
+          <div class="node"><b>Tele-operation</b><span class="t">/cmd_vel_tele</span><p>Operator drive commands from the base station.</p></div>
+        </div>
+        <div class="link">both streams</div>
+        <div class="node gate"><b>Selection node</b><span class="t">→ /cmd_vel</span><p>Forwards a stream only when the state machine's mode allows it. Priority: E-stop, then tele-op, then autonomous.</p></div>
+        <div class="link">/cmd_vel</div>
+        <div class="node"><b>Drive node</b><span class="t">/cmd_vel → ODrive CANSimple Set_Input_Vel (0x0D)</span><p>Converts body velocity to four wheel speeds and sends zero if no fresh command arrives within 0.5 s.</p></div>
+        <div class="link">CAN bus</div>
+        <div class="node hw"><b>4 × ODrive S1</b><span class="t">node_id &lt;&lt; 5 | 0x0D</span><p>One per wheel, individually addressed on one bus.</p></div>
+      </div>
+      <div class="side-stack">
+        <h3>Alongside the command path</h3>
+        <div class="node side gate"><b>State machine</b><span class="t">/active_mode</span><p>Owns the operating mode, arming and pre-charge over GPIO. Drive permission stays false in DISARMED and PRECHARGE.</p></div>
+        <div class="node side"><b>Localisation</b><span class="t">ekf_odom · navsat_transform · ekf_map</span><p>UM982 RTK, ZED 2i IMU and wheel encoders fused into one pose.</p></div>
+        <div class="node side"><b>Obstacle detection</b><span class="t">Jetson Orin → UDP → Pi</span><p>ZED 2i depth; holds the rover for anything inside 3 m or a silent camera.</p></div>
+        <div class="note is-todo">
+          <span class="note-label">Designed, not all fielded</span>
+          <p class="small">This is the designed architecture. In the 14 October field runs a simpler route executor steered straight from the GNSS fix, in place of the mission node and Nav2.</p>
+        </div>
+      </div>
+    </div>
+    <div class="prose mt-3">
+      <p>A restored radio link never counts as permission to move. After a communication loss or an E-stop the rover returns to DISARMED and needs a new, deliberate arm sequence. The same rule applies to command streams: re-establishing /cmd_vel_tele or /cmd_vel_nav doesn't recreate drive permission.</p>
+    </div>
+  </div>
+</section>
+
+<section id="mission" class="band" aria-labelledby="h-mission">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Mission node</p>
+      <h2 id="h-mission" class="h-section">The rover keeps its own plan</h2>
+      <p class="lede">Nav2 drives to a goal but has no idea of a mission. The base station holds the mission, but reaches the rover over a link that drops packets. So the rover sequences the mission on board.</p>
+    </div>
+    <div class="cols-2">
+      <div class="stack">
+        <div class="prose stack">
+          <p>The node receives the plan over the radio, sends Nav2 one waypoint at a time, cancels the goal on an E-stop, obstacle or fault, and reports to the base station at 2 Hz. Each waypoint travels as latitude, longitude and heading: 20 bytes, against about 56 for a full pose, on a link that carries about 250 bytes a packet.</p>
+          <p>It sits outside every stop path. It never publishes velocity and can't reach the contactors or the CAN bus, so if it fails the rover loses mission progress and telemetry, and all three stop paths stay intact. For the same reason the remote E-stop runs from the radio bridge straight to the state machine.</p>
+          <p>It saves the plan and progress at every waypoint with an atomic write. On start-up it treats the saved file as untrusted, and a restored mission always comes up latched: nobody may be near the rover when power returns.</p>
+        </div>
+        <div class="note is-todo">
+          <span class="note-label">Bench only so far</span>
+          <p class="small">30 logic tests and bench tests T1–T10 pass against a stubbed Nav2. <span class="src src-bench">Bench</span> The node hasn't run against the real Nav2 or on the rover yet.</p>
+        </div>
+      </div>
+      <div class="stack-lg">
+        <div class="stack">
+          <h3 class="h-small">Nine mission states</h3>
+          <div class="table-wrap">
+            <table class="data" style="min-width:0">
+              <thead><tr><th scope="col">State</th><th scope="col">Meaning</th></tr></thead>
+              <tbody>
+                <tr><th scope="row" class="mono small">IDLE</th><td>No plan loaded</td></tr>
+                <tr><th scope="row" class="mono small">READY</th><td>Plan loaded, not driving</td></tr>
+                <tr><th scope="row" class="mono small">RUNNING</th><td>A Nav2 goal is in flight</td></tr>
+                <tr><th scope="row" class="mono small">HOLD_MANUAL</th><td>Tele-op has the rover; clears when the mode returns to auto</td></tr>
+                <tr><th scope="row" class="mono small">HOLD_OBSTACLE</th><td>Something is in the way; resumes the same waypoint when it clears</td></tr>
+                <tr><th scope="row" class="mono small">HOLD_BATTERY</th><td>Below the 42.5 V reserve; finishes the current leg, starts no new one</td></tr>
+                <tr><th scope="row" class="mono small">ESTOP</th><td>Latched; needs the E-stop released and a deliberate clear</td></tr>
+                <tr><th scope="row" class="mono small">FAULT</th><td>Latched; an input went silent or retries ran out</td></tr>
+                <tr><th scope="row" class="mono small">COMPLETE</th><td>Every waypoint reached</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="stack">
+          <h3 class="h-small">Checked ten times a second, top rule wins</h3>
+          <ol class="small" style="color:var(--ink-2)">
+            <li>A new plan arrived: replace the waypoints and restart (ignored while latched)</li>
+            <li>E-stop asserted: cancel the goal and latch ESTOP</li>
+            <li>A monitored input went silent: cancel and latch FAULT</li>
+            <li>Already latched: stay latched until a clear</li>
+            <li>Nav2 returned a result: advance, retry, or fault when retries run out</li>
+            <li>Obstacle detected: cancel and hold on the same waypoint</li>
+            <li>Mode isn't autonomous: cancel and hold for tele-op</li>
+            <li>Battery below reserve: finish this leg, then hold</li>
+            <li>Otherwise: send the goal for the current waypoint</li>
+          </ol>
+          <p class="small muted">Obstacles sit above the mode check, so a mode change can't mask a detection. The battery rule sits below the goal check, so the rover stops at a waypoint rather than halfway along a tramline.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="localisation" class="band band-paper2" aria-labelledby="h-loc">
+  <div class="wrap cols-2-wide">
+    <div class="stack">
+      <p class="eyebrow">Localisation</p>
+      <h2 id="h-loc" class="h-section">Smooth for the controller, anchored for the tramline</h2>
+      <div class="prose stack">
+        <p>A path controller needs a pose that doesn't jump. A tramline follower needs one that doesn't drift. Two robot_localization filters give one of each, and the map-to-odom transform between them updates in small steps as GNSS corrections arrive.</p>
+        <p>The rover runs the same three nodes, with the same topic and frame names, as the Isaac Sim model. Both filters run in 2D mode.</p>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table class="data">
+        <thead><tr><th scope="col">Node</th><th scope="col">Fuses</th><th scope="col">Publishes</th></tr></thead>
+        <tbody>
+          <tr><th scope="row" class="mono small">ekf_odom</th><td>Wheel odometry, ZED 2i IMU</td><td>Smooth local pose; odom → base_link</td></tr>
+          <tr><th scope="row" class="mono small">navsat_transform_node</th><td>GNSS fix, IMU heading, filtered odometry</td><td>The fix as odometry in the world frame</td></tr>
+          <tr><th scope="row" class="mono small">ekf_map</th><td>Wheel odometry, IMU, GNSS odometry</td><td>Global pose; map → odom</td></tr>
+        </tbody>
+      </table>
+      <p class="cap mt-1">When GNSS drops out, ekf_odom carries on and ekf_map's uncertainty grows. Published results show error can pass the 20–50 mm tolerance within seconds, so the rover can only ride out brief dropouts.</p>
+    </div>
+  </div>
+</section>
+
+<section id="base" class="band" aria-labelledby="h-base">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Base station</p>
+      <h2 id="h-base" class="h-section">The operator's end of the link</h2>
+      <p class="lede">The base station supervises. Navigation and every safety decision stay on the rover, because a rural radio link can't be assumed to stay up.</p>
+    </div>
+    <div class="cols-2">
+      <figure class="fig">
+        <img src="assets/img/base-station-ui.jpg" width="1600" height="1000" loading="lazy" alt="A dark dashboard with a wheel-speed diagram, a satellite position plot, a map of Argyle Square with planned points, and live traces for speed, compass, cross-track error and motor current.">
+        <figcaption class="cap"><b>Field-test interface</b> showing the I–P row plan over Argyle Square, captured in simulation before the field test. Aerial imagery City of Melbourne 2020, CC BY 4.0.</figcaption>
+      </figure>
+      <figure class="fig">
+        <img src="assets/img/base-plan-2026-10-16.jpg" width="1600" height="1200" loading="lazy" alt="A base-station screen in sunlight showing 52 numbered green waypoints joined in a four-row serpentine pattern.">
+        <figcaption class="cap"><b>16 October.</b> A 52-waypoint, four-row plan loaded on the base station.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section id="dryrun" class="band band-paper2" aria-labelledby="h-dry">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Dry run</p>
+      <h2 id="h-dry" class="h-section">Faults we found before the wheels turned</h2>
+      <p class="lede">Before the motor-control and safety nodes touched live outputs, a dry run fed them normal and deliberately broken inputs with CAN transmission and GPIO disabled. Each of these could have weakened a safety behaviour without any obvious symptom in ordinary driving. <span class="src src-bench">Bench</span></p>
+    </div>
+    <div class="table-wrap">
+      <table class="data">
+        <thead><tr><th scope="col">What we saw</th><th scope="col">Why</th><th scope="col">Fix</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">A malformed packet kept a dead link "alive"</th><td>The receive time updated before validation</td><td>The last-valid timestamp updates only after a packet parses and validates</td></tr>
+          <tr><th scope="row">A recovered link kept the old arm request</th><td>Reconnecting could recreate the armed state</td><td>Arming became edge-triggered: arm must drop, then rise again</td></tr>
+          <tr><th scope="row">A mode change and an E-stop in the same cycle</th><td>Normal mode logic could run before the stop</td><td>Stop and link-loss checks run ahead of every normal transition</td></tr>
+          <tr><th scope="row">Yaw commands gave almost equal wheel speeds</th><td>Track width was still a placeholder</td><td>Track width became a required parameter; ± yaw became a mandatory test</td></tr>
+          <tr><th scope="row">One side needed the opposite motor sign</th><td>Mirrored motor mounting</td><td>Per-wheel direction signs, checked with forward and reverse vectors</td></tr>
+          <tr><th scope="row">CAN payload decoded wrongly</th><td>Byte order and type, not the speed maths</td><td>Explicit little-endian float32 velocity and torque feed-forward</td></tr>
+          <tr><th scope="row">Link timeout fired at start-up</th><td>No link had been established yet</td><td>The bridge tells "not yet established" from "established then lost"</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="cols-2 mt-4">
+      <div class="stack">
+        <h3 class="h-small">Known limitations</h3>
+        <ul class="prose small">
+          <li>The command link between base station and rover isn't authenticated.</li>
+          <li>No visual or audible alarm is fitted.</li>
+          <li>One sensing technology, a stereo camera, detects obstacles.</li>
+          <li>The Pi gets no electrical feedback from the pre-charge and contactor hardware, so it treats its own commands as fact.</li>
+          <li>The 0.5 s link timeout and 5 s pre-charge window are configuration settings, not validated values.</li>
+          <li>No functional-safety lifecycle was carried out.</li>
+        </ul>
+      </div>
+      <div class="stack">
+        <h3 class="h-small">Checked on the built rover</h3>
+        <ul class="prose small">
+          <li>All four wheels held 36.7 rpm (0.50 m/s) on the stand, measured-to-commanded ratio 1.00, 13 October. <span class="src src-rover">Rover</span></li>
+          <li>The remote E-stop stopped the wheels on 8 and 13 October.</li>
+          <li>The physical E-stop removed motor power, and the Pi, Jetson and radio went down with it, as designed.</li>
+          <li>After either E-stop the rover stayed still until a new arm request.</li>
+          <li>Indoors, it stopped for an obstacle, waited, and carried on once it cleared.</li>
+          <li>The under-voltage stop opened the contactor, with the voltage simulated in software.</li>
+        </ul>
+        <p class="small muted">Apart from the stand test, these were observations, not logged measurements.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="soilband">
+  <div class="wrap">
+    <div class="stack">
+      <h2>Knuckey Rover</h2>
+      <p>OENG1168 Engineering Capstone, RMIT University, 2026. Built with Knuckey Agricultural Engineering of Winchelsea, Victoria.</p>
+      <div class="partner"><img src="assets/fig/knuckey-logo.png" width="44" height="44" alt="Knuckey Agricultural Engineering logo"><span class="small">Knuckey Agricultural Engineering<br>Est. 1917</span></div>
+    </div>
+    <div>
+      <ul>
+        <li><a href="index.html">Story</a></li>
+        <li><a href="project.html">Project</a></li>
+        <li><a href="rover.html">Rover</a></li>
+        <li><a href="results.html">Results</a></li>
+        <li><a href="knuckey.html">Knuckey</a></li>
+        <li><a href="team.html">Team</a></li>
+      </ul>
+    </div>
+    <div>
+      <ul>
+        <li>Isabella Calder</li><li>Manas Desai</li><li>Alexander McIntosh</li><li>Morne Nel</li><li>Harry Roe</li><li>Harry Roffe</li>
+        <li class="mt-1">Supervisor: Dr Amirali Khodadadian Gostar</li>
+      </ul>
+    </div>
+    <p class="fine">Figures come from the team's final report (draft of 19 October 2026) and the field records of 13 and 14 October 2026. Tags show where each number comes from. Sim: Isaac Sim. Field: Argyle Square trials. Rover: commissioning tests on Prototype 2. Bench: software bench tests. Site visit: Knuckey, Winchelsea, 1 May 2026. Ref: published research cited in the report.</p>
+  </div>
+</footer>
+
+<script src="assets/js/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Knuckey · Knuckey Rover</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Knuckey Agricultural Engineering of Winchelsea, the industry partner for the Knuckey Rover capstone, and what the 1 May 2026 site visit changed in the design.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&amp;display=swap">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="Knuckey Rover home">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="2" fill="none" stroke="#1C1F1D" stroke-width="1.5"/><g stroke="#1C1F1D" stroke-width="1.4"><path d="M5 11.6 27 8.4"/><path d="M5 17.6 27 14.4"/><path d="M5 23.6 27 20.4"/></g><circle cx="19" cy="15.5" r="3.2" fill="#009CA8" stroke="#F6F3EC" stroke-width="1.6"/></svg>
+      <span><span class="brand-name">Knuckey Rover</span><span class="brand-sub">RMIT × Knuckey</span></span>
+    </a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+    <nav class="nav" id="site-nav" aria-label="Main">
+      <a href="project.html">Project</a>
+      <a href="rover.html">Rover</a>
+      <a href="results.html">Results</a>
+      <a href="knuckey.html" aria-current="page">Knuckey</a>
+      <a href="team.html">Team</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<section class="page-head">
+  <div class="wrap">
+    <p class="eyebrow">Industry partner</p>
+    <div class="partner" style="gap:18px">
+      <img src="assets/fig/knuckey-logo.png" width="72" height="72" alt="Knuckey Agricultural Engineering logo: a teal ring around a black K-shaped mark, with Est. 1917.">
+      <h1>Knuckey Agricultural Engineering</h1>
+    </div>
+    <p class="lede">A family engineering business in Winchelsea, Western Victoria, building machinery for controlled traffic farming. Knuckey has supplied growers from the Western District to Queensland and Western Australia across four generations, since 1917.</p>
+    <nav class="toc" aria-label="On this page">
+      <a href="#machines">What Knuckey builds</a>
+      <a href="#ctf">Why CTF</a>
+      <a href="#visit">Site visit</a>
+      <a href="#paddock">The paddock</a>
+      <a href="#next">What comes next</a>
+    </nav>
+  </div>
+</section>
+
+<section id="machines" class="band" aria-labelledby="h-mach">
+  <div class="wrap cols-2-wide">
+    <div class="stack">
+      <p class="eyebrow">What Knuckey builds</p>
+      <h2 id="h-mach" class="h-section">The machine already exists. The driver is the missing part.</h2>
+    </div>
+    <div class="stack-lg">
+      <div class="prose stack">
+        <p>Knuckey's CTM3000 tractor and Accu-Sow seeder are built for controlled traffic farming, and its customers already run on established tramlines. Its Precision Sowing System won Australian Agricultural Machine of the Year at the 2019 Elmore Field Days. Knuckey also makes a dedicated wheel-track renovator to keep tramlines in shape from season to season.</p>
+        <p>So this project doesn't design a tractor. It investigates the autonomous navigation layer that could drive the one Knuckey already makes. Knuckey has indicated a horizon of three to five years for autonomous capability, which makes this year an early prototype meant to take technical risk out before full-scale development.</p>
+        <p class="small"><a href="https://knuckeys.com.au/" rel="noopener">knuckeys.com.au</a></p>
+      </div>
+      <figure class="fig">
+        <img src="assets/img/concept-render.jpg" width="1354" height="535" loading="lazy" alt="A render of a small rover towing a very wide seeding implement with a tall seed bin across a flat paddock, with a row of trees on the horizon.">
+        <figcaption class="cap"><b>The operating concept.</b> The rover follows pre-mapped GNSS tramlines while towing a wide seeding implement. Render from the simulation; the implement is visual only.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section id="ctf" class="band band-paper2" aria-labelledby="h-ctf">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Why controlled traffic farming</p>
+      <h2 id="h-ctf" class="h-section">A proven system that the south-east hasn't taken up</h2>
+      <p class="lede">CTF confines every machine to permanent lanes spaced to match the widest implement, so wheels compact the same strips every year and the crop grows on soil nothing has driven over.</p>
+    </div>
+    <div class="stats">
+      <div class="stat"><span class="stat-v">~30%</span><span class="stat-l">of Australian cropped hectares are under CTF, and more than 60% in central Queensland <span class="src src-ref">Ref</span></span></div>
+      <div class="stat"><span class="stat-v">~5%</span><span class="stat-l">in South Australia, the Victorian Mallee and other low-rainfall zones in the south-east <span class="src src-ref">Ref</span></span></div>
+      <div class="stat"><span class="stat-v">$46<small>/ha</small></span><span class="stat-l">a year: about $31 from yield and quality, and $15 in lower input costs <span class="src src-ref">Ref</span></span></div>
+      <div class="stat"><span class="stat-v">15–30%</span><span class="stat-l">fuel savings reported when machines run on firm traffic lanes <span class="src src-ref">Ref</span></span></div>
+    </div>
+    <div class="prose mt-3">
+      <p>On a 1,500-hectare property the CTF gains approach $69,000 a year. Victoria's Wimmera and Western District, among Australia's most valuable broadacre grain regions, sit in the same low-uptake bracket. Australia leads the world in CTF as a farming system but trails North America and Europe in deploying autonomous farm machinery. John Deere's autonomous 8R and 9RX and Monarch's MK-V are built for Midwest row crops and for vineyards and orchards. None of the cited manufacturer material shows them validated on Australian CTF tramlines.</p>
+      <p class="small muted mt-1">Source: J. Hagan, "Economics of controlled-traffic farming are undeniably clear", GRDC Groundcover, 2020, as cited in the team's final report.</p>
+    </div>
+  </div>
+</section>
+
+<section id="visit" class="band" aria-labelledby="h-visit">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Site visit <span class="src src-site">1 May 2026</span></p>
+      <h2 id="h-visit" class="h-section">What we heard at Winchelsea, and what it changed</h2>
+      <p class="lede">The team visited Knuckey on 1 May 2026. These findings set the accuracy requirement, the obstacle priorities and the decision to work with the grower's equipment instead of replacing it.</p>
+    </div>
+    <div class="table-wrap">
+      <table class="data">
+        <thead><tr><th scope="col">What we heard</th><th scope="col">What it means for the rover</th></tr></thead>
+        <tbody>
+          <tr><th scope="row" style="font-weight:500">Neighbouring passes must repeat to about ±20–50 mm, set by the seeding tine spacing.</th><td>The accuracy requirement. The rover has to match the existing guidance system, at 50 mm or better.</td></tr>
+          <tr><th scope="row" style="font-weight:500">Growers pre-map paddocks by driving them with GPS on a quad bike or tractor. Satellite mapping is less accurate, and drones are awkward for following fence lines.</th><td>The rover consumes an existing map. Building one on board is out of scope.</td></tr>
+          <tr><th scope="row" style="font-weight:500">Mapping and guidance run through John Deere systems, and maps can be exported. The operator prefers compatible equipment.</th><td>Accept an exported John Deere map and work alongside the existing hardware.</td></tr>
+          <tr><th scope="row" style="font-weight:500">John Deere restricts its RTK corrections to approved receivers, but existing receivers can share position over a serial NMEA stream.</th><td>Take NMEA over serial from the receiver the grower already owns, rather than supply a separate one.</td></tr>
+          <tr><th scope="row" style="font-weight:500">The operator's network RTK base station needs line of sight and costs about $8,000 a year. It's more accurate than satellite-delivered RTK.</th><td>Correction availability is an assumption the rover inherits, and an investment it should reuse.</td></tr>
+          <tr><th scope="row" style="font-weight:500">Tramlines use 3 m wheel centres for seeding.</th><td>Fixes the wheel-track spacing for the target operation.</td></tr>
+          <tr><th scope="row" style="font-weight:500">Rocks are the main obstacle, including rocks of about 400 mm and partly buried rock. They match the soil colour, and thermal sensing was suggested.</th><td>Rock detection is the main perception job, and a known weakness of stereo cameras.</td></tr>
+          <tr><th scope="row" style="font-weight:500">The usual response to a rock is to steer round it or lift the seeder over it.</th><td>A production rover needs avoidance or implement lift. For the prototype, Knuckey agreed to stop-and-wait.</td></tr>
+          <tr><th scope="row" style="font-weight:500">Cattle, sheep, kangaroos and people must be avoided, though they turn up less often than rocks and animals move away from machinery.</th><td>Safety-critical, but not the main operational concern.</td></tr>
+          <tr><th scope="row" style="font-weight:500">Vibration during field work is significant.</th><td>Bench IMU noise figures won't hold in the field; vibration became part of RQ3.</td></tr>
+          <tr><th scope="row" style="font-weight:500">Seeder widths of 3, 4 and 6 m came up.</th><td>The simulation assumed a 12 m implement, which still has to be reconciled.</td></tr>
+          <tr><th scope="row" style="font-weight:500">Lower labour cost is the main benefit of autonomy. Workers don't want long shifts, and the operator wants less night supervision.</th><td>Supports the case for running machines through more of the seeding window.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- PLACEHOLDER: replace with 2–4 site-visit photos (see _incoming/README.md) -->
+    <div class="slot mt-3" style="min-height:160px">Photos from the 1 May site visit to come</div>
+  </div>
+</section>
+
+<section id="paddock" class="band band-paper2" aria-labelledby="h-pad">
+  <div class="wrap cols-2-wide">
+    <div class="stack">
+      <p class="eyebrow">The paddock</p>
+      <h2 id="h-pad" class="h-section">P-Middle West, near Winchelsea</h2>
+      <div class="prose stack">
+        <p>The simulated field is a real one, built from the guidance data Knuckey supplied: the grower's John Deere AB line, two WGS-84 points 762.1 m apart on a bearing of 278.28°, and a paddock area of 73.17 ha.</p>
+        <p>Dividing the area by the AB length gives a working width of 960.1 m, or 81 passes at 12 m. Trimming 36 m off each end for the headlands leaves 690.1 m of working pass. No boundary polygon exists, so coverage is measured against the geometry generated from the same line the rover follows.</p>
+      </div>
+    </div>
+    <figure class="fig plot">
+      <img src="assets/fig/tramline-plan.png" width="1600" height="1132" loading="lazy" alt="Left: the paddock outline with 81 working passes parallel to the guidance line and headlands at both ends. Right: detail at the western headland showing pass end and next-pass start points 12 metres apart.">
+      <figcaption class="cap"><b>Tramline plan.</b> Left: 81 passes at 12 m parallel to the grower's guidance line, 36 m headlands. Right: the western headland, showing pass ends and next-pass starts.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="next" class="band" aria-labelledby="h-next">
+  <div class="wrap cols-2">
+    <div class="stack">
+      <p class="eyebrow">What comes next</p>
+      <h2 id="h-next" class="h-section">Fitting into a grower's existing kit</h2>
+      <p class="prose muted">Compatibility with established farming systems matters more than any single feature if the rover is going to become something Knuckey's customers use.</p>
+    </div>
+    <ol class="next-list">
+      <li><div><b>Confirm the tolerance</b><span>Whether ±20–50 mm is a strict maximum or a typical operating figure, and how accurate the customer's current guidance system is.</span></div></li>
+      <li><div><b>Confirm implement width and tramline spacing</b><span>The simulation assumed 12 m; the site visit discussed 3, 4 and 6 m seeders.</span></div></li>
+      <li><div><b>Import John Deere field maps</b><span>So the rover drives the same lines the grower already uses.</span></div></li>
+      <li><div><b>Take NMEA from the grower's receiver</b><span>Reusing their RTK subscription and base station instead of duplicating it.</span></div></li>
+      <li><div><b>Go beyond stop-and-wait</b><span>Steering round obstacles or lifting the implement, as operators do now.</span></div></li>
+    </ol>
+  </div>
+</section>
+
+<section class="band-tight band-soil" aria-label="Thanks">
+  <div class="wrap">
+    <p class="h-small" style="color:var(--soil-3);max-width:60ch">Thanks to Knuckey Agricultural Engineering, Winchelsea, for the site visit and paddock data.</p>
+  </div>
+</section>
+
+</main>
+
+<footer class="soilband">
+  <div class="wrap">
+    <div class="stack">
+      <h2>Knuckey Rover</h2>
+      <p>OENG1168 Engineering Capstone, RMIT University, 2026. Built with Knuckey Agricultural Engineering of Winchelsea, Victoria.</p>
+      <div class="partner"><img src="assets/fig/knuckey-logo.png" width="44" height="44" alt="Knuckey Agricultural Engineering logo"><span class="small">Knuckey Agricultural Engineering<br>Est. 1917</span></div>
+    </div>
+    <div>
+      <ul>
+        <li><a href="index.html">Story</a></li>
+        <li><a href="project.html">Project</a></li>
+        <li><a href="rover.html">Rover</a></li>
+        <li><a href="results.html">Results</a></li>
+        <li><a href="knuckey.html">Knuckey</a></li>
+        <li><a href="team.html">Team</a></li>
+      </ul>
+    </div>
+    <div>
+      <ul>
+        <li>Isabella Calder</li><li>Manas Desai</li><li>Alexander McIntosh</li><li>Morne Nel</li><li>Harry Roe</li><li>Harry Roffe</li>
+        <li class="mt-1">Supervisor: Dr Amirali Khodadadian Gostar</li>
+      </ul>
+    </div>
+    <p class="fine">Knuckey company details from knuckeys.com.au as cited in the team's final report. Site-visit findings from the report's Appendix C, filtered to those the report uses. CTF figures from GRDC Groundcover (Hagan, 2020).</p>
+  </div>
+</footer>
+
+<script src="assets/js/site.js"></script>
+</body>
+</html>
